@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StayPuerte — Puertecillo, Chile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ocean: #0A1C27; --blue: #1B3D52; --foam: #EDF5F2;
+      --sand: #C8A86B; --sunset: #D45E28; --green: #25D366;
+      --display: 'Bebas Neue', sans-serif; --body: 'DM Sans', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--ocean); color: var(--foam); font-family: var(--body); font-weight: 300; overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--ocean); }
+    ::-webkit-scrollbar-thumb { background: var(--sand); border-radius: 2px; }
+    input, textarea, select {
+      background: rgba(27,61,82,0.5); border: 1px solid rgba(200,168,107,0.2);
+      color: var(--foam); font-family: var(--body); font-size: 0.85rem;
+      padding: 0.85rem 1.1rem; outline: none; transition: border-color 0.3s; width: 100%;
+    }
+    input:focus, textarea:focus, select:focus { border-color: rgba(200,168,107,0.55); }
+    input::placeholder, textarea::placeholder { color: rgba(237,245,242,0.3); font-style: italic; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeIn 0.5s ease forwards; }
+    @keyframes slideUp { from { opacity:0; transform:translateY(32px); } to { opacity:1; transform:translateY(0); } }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ─── DATA ─── */
+const PROPS = [
+  { id:1,  name:'Casa Tinaja Puertecillo',      type:'Casa',   pax:9,  beds:3, rating:4.70, price:120000, airbnb:'https://www.airbnb.cl/rooms/819496192328598479',  detail:'02%20Casa%20Tinaja%20Puertecillo.html', img:'Propiedades%20Fotos/02%20Casa%20Tinaja%20Puertecillo/01.avif',       desc:'Acogedora casa a 10 min de Puertecillo y 15 min de la playa. Calefacción a leña, terraza con parrilla y tinaja caliente. WiFi satelital.' },
+  { id:2,  name:'Keola Puertecillo',            type:'Cabaña', pax:6,  beds:3, rating:4.84, price:95000,  airbnb:'https://www.airbnb.cl/rooms/821921238436749471',  detail:'03%20Keola%20Puertecillo.html',              img:'Propiedades%20Fotos/03%20Keola%20Puertecillo/01.avif',               desc:'Casa rodeada de naturaleza con WiFi Starlink. A 10 min de la playa. Jacuzzi privado 24/7 disponible todo el año. Se permiten mascotas.' },
+  { id:3,  name:'Casa Sustentable Puertecillo', type:'Casa',   pax:6,  beds:3, rating:5.00, price:140000, airbnb:'https://www.airbnb.cl/rooms/974855936829156516',  detail:'04%20Casa%20Sustentable%20Puertecillo.html', img:'Propiedades%20Fotos/04%20Casa%20Sustentable%20Puertecillo/01.avif', desc:'Casa autosustentable en condominio privado, en medio del bosque. Vista al valle y montañas. A 20 min de la playa. Se permiten mascotas.' },
+  { id:4,  name:'HolzenCabin',                  type:'Cabaña', pax:2,  beds:1, rating:4.85, price:75000,  airbnb:'https://www.airbnb.cl/rooms/1039658643604309668', detail:'05%20HolzenCabin.html',                      img:'Propiedades%20Fotos/05%20HolzenCabin/01.avif',                       desc:'En primera línea al mar, sobre un acantilado con vistas al océano. Jacuzzi privado 24/7. Trekking de 45 min hacia playa oculta. Superanfitrión.' },
+  { id:5,  name:'Casa Azul Manzano',            type:'Casa',   pax:6,  beds:3, rating:4.78, price:130000, airbnb:'https://www.airbnb.cl/rooms/1074617627027380183', img:'Propiedades%20Fotos/06%20Casa%20Azul%20Manzano/01.jpeg',       detail:'06%20Casa%20Azul%20Manzano.html',       desc:'Casa inspirada en el mar, rodeada de bosque nativo. Hottub eléctrico privado 24/7. A 15 min de Puertecillo y 30 min de Matanzas.' },
+  { id:6,  name:'Casa del Artesano',            type:'Casa',   pax:5,  beds:2, rating:4.72, price:110000, airbnb:'https://www.airbnb.cl/rooms/1079295629225275917', img:'Propiedades%20Fotos/07%20Casa%20del%20Artesano/01pp.avif',      detail:'07%20Casa%20del%20Artesano.html',       desc:'En el corazón de Matanzas, a pasos de sus playas. Vista a la bahía entre acantilados y bosque nativo. Jacuzzi según temporada. Superanfitrión.' },
+  { id:7,  name:'Casa Vista Puertecillo',       type:'Cabaña', pax:2,  beds:1, rating:4.67, price:65000,  airbnb:'https://www.airbnb.cl/rooms/1094382266894432437', img:'Propiedades%20Fotos/08%20Casa%20Vista%20Puertecillo/1p.avif',   detail:'08%20Casa%20Vista%20Puertecillo.html',  desc:'Gran vista frente al mar. Tina, terraza privada y cocina equipada. Se permiten mascotas. Acceso requiere 4x4. Superanfitrión.' },
+  { id:8,  name:'Mirador Alta Gracia',          type:'Cabaña', pax:2,  beds:1, rating:4.87, price:70000,  airbnb:'https://www.airbnb.cl/rooms/1094997099915785864', img:'Propiedades%20Fotos/09%20Mirador%20Alta%20Gracia/01p.avif',     detail:'09%20Mirador%20Alta%20Gracia.html',     desc:'Refugio frente al mar en primera línea, desde lo alto de un acantilado. Se escuchan las olas. Bajada de 45 min hacia playa oculta.' },
+  { id:9,  name:'Cabaña HotTub 5P',            type:'Cabaña', pax:5,  beds:2, rating:5.00, price:90000,  airbnb:'https://www.airbnb.cl/rooms/1220537022995166621', img:'Propiedades%20Fotos/10%20Cabana%20HotTub%205P/01.avif',         detail:'10%20Cabana%20HotTub%205P.html',        desc:'Oasis con hot tub privado y diseño minimalista. Terraza con parrilla. Cama matrimonial + altillo. Camino a Puertecillo.' },
+  { id:10, name:'Cabaña Vive Puertecillo',      type:'Cabaña', pax:4,  beds:1, rating:4.90, price:50000,  airbnb:'https://www.airbnb.cl/rooms/1222567922199700212', img:'Propiedades%20Fotos/11%20Cabana%20Vive%20Puertecillo/01.avif',  detail:'11%20Cabana%20Vive%20Puertecillo.html', desc:'Monoambiente que integra cocina, comedor y cama en primer piso con altillo. Estufa a leña, terraza con parrilla. Se permiten mascotas.' },
+  { id:11, name:'Cabaña HotTub 9P',            type:'Cabaña', pax:9,  beds:2, rating:5.00, price:190000, airbnb:'https://www.airbnb.cl/rooms/1222574640689079234', img:'Propiedades%20Fotos/12%20Cabana%20HotTub%209P/01.avif',         detail:'12%20Cabana%20HotTub%209P.html',        desc:'Moderna cabaña con hot tub. Dos espacios separados por terraza con puerta propia, cada uno con cama matrimonial, altillo y baño.' },
+  { id:13, name:'Minicasa Litueche',            type:'Cabaña', pax:3,  beds:1, rating:4.75, price:80000,  airbnb:'https://www.airbnb.cl/rooms/745410184750018902', detail:'01%20Minicasa%20Litueche.html', img:'Propiedades%20Fotos/01%20Minicasa%20Litueche/01.avif', desc:'Tiny House en entorno tranquilo. Ideal para escapada romántica o teletrabajo. Cercana a Topocalma, Puertecillo y Matanzas. Invierno recomienda 4x4.' },
+];
+
+const SERVICES = [
+  { icon:'◈', t:'Gestión de Reservas',      d:'Publicamos y optimizamos tus anuncios en Airbnb para maximizar ocupación y tarifas.' },
+  { icon:'◎', t:'Atención al Huésped 24/7', d:'Respondemos mensajes, coordinamos check-ins y acompañamos durante toda la estadía.' },
+  { icon:'◇', t:'Limpieza y Mantenimiento', d:'Supervisamos aseo profesional entre estadías y coordinamos mantenciones preventivas.' },
+  { icon:'◉', t:'Optimización de Precios',  d:'Tarifas dinámicas según temporada, surf y demanda local para máxima rentabilidad.' },
+  { icon:'◐', t:'Reportes Mensuales',       d:'Informes claros con ingresos, reservas y gastos. Transparencia total cada mes.' },
+  { icon:'◑', t:'Fotografía Profesional',   d:'Sesiones que destacan el entorno natural de Puertecillo y aumentan la conversión.' },
+];
+
+const ONBOARDING = [
+  { n:'01', t:'Evaluación Gratuita',     d:'Visitamos la propiedad, evaluamos su potencial y entregamos una estimación real de ingresos. Sin compromiso.' },
+  { n:'02', t:'Propuesta + Contrato',    d:'Presentamos la propuesta con comisiones y condiciones. Firmamos digitalmente el mismo día.' },
+  { n:'03', t:'Preparación',             d:'Checklist de equipamiento, insumos, instalación de caja de llaves y coordinación de mejoras necesarias.' },
+  { n:'04', t:'Setup Digital',           d:'Sesión fotográfica profesional, anuncio optimizado en Airbnb y configuración de precios dinámicos.' },
+  { n:'05', t:'Primera Reserva',         d:'Una vez publicada, las primeras reservas llegan según la temporada y el mercado. En temporada alta el movimiento es inmediato; fuera de temporada puede tomar algunas semanas.' },
+  { n:'06', t:'Operación Continua',      d:'Desde ese momento nos encargamos de todo: comunicaciones, check-in, limpieza y reportes. Tú solo recibes tu informe mensual.' },
+];
+
+const FAQS = [
+  { q:'¿Cuánto cobra StayPuerte?',                  a:'Trabajamos con un modelo de comisión sobre los ingresos generados. En promedio cobramos un 15%, aunque el porcentaje exacto varía según el tipo de propiedad y los servicios incluidos. Te lo indicamos en tu evaluación gratuita — sin letra chica.' },
+  { q:'¿Puedo usar mi propiedad cuando quiera?',    a:'Sí. Tú decides los períodos disponibles para arrendar. Puedes bloquear fechas para uso personal con anticipación razonable sin ningún problema.' },
+  { q:'¿Cómo y cuándo recibo mis ingresos?',        a:'Tú recibes los pagos directamente. Nosotros cobramos nuestra comisión después de cada reserva. Mes a mes te enviamos un informe detallado de reservas, ingresos y gastos — sabes exactamente qué entró y qué salió.' },
+  { q:'¿Qué pasa si hay daños en la propiedad?',    a:'Airbnb cubre daños a través de su programa AirCover. Gestionamos el proceso de reclamación y coordinamos reparaciones para que la propiedad esté lista para la próxima reserva.' },
+  { q:'¿Cuánto tiempo tarda el onboarding?',        a:'Entre 7 y 14 días desde la firma del contrato hasta la primera publicación activa, dependiendo principalmente de la sesión fotográfica y el estado inicial de la propiedad.' },
+  { q:'¿Necesito estar presente para el check-in?', a:'No. Usamos sistemas de acceso remoto — cajas de llaves o cerraduras inteligentes — para que el check-in sea completamente autónomo las 24 horas.' },
+];
+
+const EXTRAS = [
+  { icon:'🚲', t:'Arriendo de Bicicletas',    d:'Explora Puertecillo por horas o días. Flota propia disponible para huéspedes y visitantes.' },
+  { icon:'🏄', t:'Arriendo de Tablas de Surf',d:'Shortboard, longboard y funboard para todos los niveles. Sin necesidad de traer tu equipo.' },
+  { icon:'👕', t:'Lavandería',                d:'Lavado y secado con retiro y entrega en la propiedad. Sin perder un día de olas.' },
+  { icon:'🧹', t:'Aseo para Larga Estadía',   d:'Limpieza semanal o quincenal coordinada directamente con Stay Puerte.' },
+];
+
+/* ─── HELPERS ─── */
+const fmtPrice = p => `$${Math.round(p/1000)}.000`;
+
+function busyDates(propId, year, month) {
+  const busy = new Set();
+  const days = new Date(year, month, 0).getDate();
+  let seed = propId * 31 + month * 13;
+  const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+  for (let d = 1; d <= days; d++) {
+    const dow = new Date(year, month - 1, d).getDay();
+    if ((dow === 0 || dow === 6) && rnd() > 0.35) busy.add(d);
+    else if (rnd() > 0.78) busy.add(d);
+  }
+  return busy;
+}
+
+/* ─── STYLE ATOMS ─── */
+const S = {
+  btnPrimary: { background:'#D45E28', color:'#EDF5F2', padding:'0.85rem 2rem', fontFamily:'DM Sans,sans-serif', fontSize:'0.78rem', letterSpacing:'0.18em', textTransform:'uppercase', border:'none', cursor:'pointer', transition:'background 0.3s,transform 0.2s', display:'inline-flex', alignItems:'center', gap:'0.5rem', textDecoration:'none' },
+  btnOutline:  { background:'transparent', border:'1px solid rgba(200,168,107,0.45)', color:'#C8A86B', padding:'0.85rem 2rem', fontFamily:'DM Sans,sans-serif', fontSize:'0.78rem', letterSpacing:'0.18em', textTransform:'uppercase', cursor:'pointer', transition:'all 0.3s', display:'inline-flex', alignItems:'center', gap:'0.5rem', textDecoration:'none' },
+  btnGreen:    { background:'#25D366', color:'#fff', padding:'0.85rem 2rem', fontFamily:'DM Sans,sans-serif', fontSize:'0.78rem', letterSpacing:'0.18em', textTransform:'uppercase', border:'none', cursor:'pointer', transition:'background 0.3s', display:'inline-flex', alignItems:'center', gap:'0.5rem', textDecoration:'none' },
+  tag:         { fontSize:'0.62rem', letterSpacing:'0.38em', textTransform:'uppercase', color:'#C8A86B', fontFamily:'DM Sans,sans-serif', display:'block', marginBottom:'0.9rem' },
+  title:       { fontFamily:'Bebas Neue,sans-serif', lineHeight:0.93, letterSpacing:'0.03em', color:'#EDF5F2' },
+  card:        { background:'#0A1C27', border:'1px solid rgba(200,168,107,0.13)', transition:'transform 0.3s,border-color 0.3s', overflow:'hidden' },
+};
+
+/* ─── MOBILE HOOK ─── */
+const useIsMobile = () => {
+  const [m, setM] = useState(window.innerWidth < 768);
+  useEffect(() => {
+    const fn = () => setM(window.innerWidth < 768);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+  return m;
+};
+
+/* ─── LOGO ─── */
+const Logo = ({ onClick, size = 'md' }) => {
+  const h = size === 'lg' ? '60px' : '40px';
+  return (
+    <div onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
+      <img src="staypuerte-logo.png" alt="StayPuerte" style={{ height: h, width:'auto', objectFit:'contain', display:'block' }} />
+    </div>
+  );
+};
+
+/* ─── IMG PLACEHOLDER ─── */
+const PropImg = ({ name, color = '#0A1C27' }) => (
+  <div style={{ width:'100%', height:'200px', background:color, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', position:'relative', overflow:'hidden' }}>
+    <svg style={{ position:'absolute', inset:0, width:'100%', height:'100%', opacity:0.07 }} xmlns="http://www.w3.org/2000/svg">
+      <defs><pattern id={`p${name}`} width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><line x1="0" y1="0" x2="0" y2="24" stroke="#C8A86B" strokeWidth="1"/></pattern></defs>
+      <rect width="100%" height="100%" fill={`url(#p${name})`}/>
+    </svg>
+    <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'0.6rem', letterSpacing:'0.3em', color:'rgba(200,168,107,0.5)', textTransform:'uppercase', zIndex:1, textAlign:'center', padding:'0 1rem' }}>foto propiedad</div>
+    <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'1rem', letterSpacing:'0.06em', color:'rgba(200,168,107,0.3)', zIndex:1, textAlign:'center', padding:'0 0.5rem', marginTop:'0.3rem' }}>{name}</div>
+  </div>
+);
+
+/* ─── NAV ─── */
+const Nav = ({ page, setPage, scrolled }) => {
+  const [mob, setMob] = useState(false);
+  const isMobile = useIsMobile();
+  const bg = scrolled || mob ? 'rgba(10,28,39,0.97)' : 'transparent';
+  const border = scrolled ? '1px solid rgba(200,168,107,0.12)' : '1px solid transparent';
+
+  const links = page === 'propietarios'
+    ? [['#servicios','Servicios'],['#nosotros','Nosotros'],['#proceso','Proceso'],['#faq','FAQ'],['#contacto','Contacto']]
+    : [['#propiedades','Propiedades'],['#extras','Extras'],['#contacto-arr','Contactar']];
+
+  const btnBase = { padding:'0.7rem 1.8rem', fontFamily:'DM Sans,sans-serif', fontSize:'0.72rem', letterSpacing:'0.18em', textTransform:'uppercase', cursor:'pointer', transition:'all 0.25s', border:'none' };
+
+  const closeMob = () => setMob(false);
+
+  return (
+    <>
+      <nav style={{ position:'fixed', top:0, left:0, right:0, zIndex:200, padding:'1rem 5vw', display:'flex', alignItems:'center', justifyContent:'space-between', background:bg, backdropFilter:'blur(14px)', borderBottom:border, transition:'all 0.4s' }}>
+        <Logo onClick={() => { setPage('home'); closeMob(); }} />
+
+        {page !== 'home' && (
+          <>
+            {/* Desktop links */}
+            <ul style={{ display:'flex', gap:'2.2rem', listStyle:'none', margin:'0 auto' }} className="desktop-nav">
+              {links.map(([h,l]) => (
+                <li key={h}><a href={h} style={{ color:'rgba(237,245,242,0.65)', textDecoration:'none', fontSize:'0.72rem', letterSpacing:'0.2em', textTransform:'uppercase', transition:'color 0.3s' }}
+                  onMouseEnter={e=>e.target.style.color='#C8A86B'} onMouseLeave={e=>e.target.style.color='rgba(237,245,242,0.65)'}>{l}</a></li>
+              ))}
+            </ul>
+            {/* Desktop CTA */}
+            <div className="desktop-nav">
+              {page === 'propietarios'
+                ? <a href="#contacto" style={S.btnPrimary}>Consultar gratis</a>
+                : <a href="#contacto-arr" style={S.btnGreen}>Hablar por WhatsApp</a>
+              }
+            </div>
+            {/* Hamburger — mobile only */}
+            <button className="mob-menu-btn" onClick={() => setMob(!mob)}
+              style={{ background:'none', border:'1px solid rgba(200,168,107,0.35)', color:'#C8A86B', width:'40px', height:'40px', cursor:'pointer', fontSize:'1.1rem', lineHeight:1, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+              {mob ? '✕' : '☰'}
+            </button>
+          </>
+        )}
+
+        {page === 'home' && (
+          <div style={{ display:'flex', gap: isMobile?'0.4rem':'0.8rem' }}>
+            <button onClick={() => setPage('propietarios')} style={{ ...btnBase, background:'transparent', border:'1px solid rgba(237,245,242,0.55)', color:'#EDF5F2', padding: isMobile?'0.55rem 0.85rem':'0.7rem 1.8rem', fontSize: isMobile?'0.62rem':'0.72rem' }}
+              onMouseEnter={e=>e.currentTarget.style.background='rgba(237,245,242,0.08)'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+              {isMobile ? 'Propietario' : 'Soy propietario'}
+            </button>
+            <button onClick={() => setPage('arrendar')} style={{ ...btnBase, background:'#C8A86B', border:'1px solid #C8A86B', color:'#0A1C27', padding: isMobile?'0.55rem 0.85rem':'0.7rem 1.8rem', fontSize: isMobile?'0.62rem':'0.72rem' }}
+              onMouseEnter={e=>{e.currentTarget.style.background='#b8975a';e.currentTarget.style.borderColor='#b8975a'}} onMouseLeave={e=>{e.currentTarget.style.background='#C8A86B';e.currentTarget.style.borderColor='#C8A86B'}}>
+              {isMobile ? 'Propiedades' : 'Ver propiedades'}
+            </button>
+          </div>
+        )}
+      </nav>
+
+      {/* Mobile dropdown menu */}
+      {mob && page !== 'home' && (
+        <div style={{ position:'fixed', top:'62px', left:0, right:0, zIndex:199, background:'rgba(10,28,39,0.97)', backdropFilter:'blur(14px)', borderBottom:'1px solid rgba(200,168,107,0.15)', padding:'0.5rem 5vw 1.8rem', animation:'fadeIn 0.2s ease' }}>
+          {links.map(([h,l]) => (
+            <a key={h} href={h} onClick={closeMob}
+              style={{ display:'block', color:'rgba(237,245,242,0.78)', textDecoration:'none', fontFamily:'Bebas Neue,sans-serif', fontSize:'1.4rem', letterSpacing:'0.12em', textTransform:'uppercase', padding:'0.85rem 0', borderBottom:'1px solid rgba(200,168,107,0.1)', transition:'color 0.2s' }}
+              onMouseEnter={e=>e.target.style.color='#C8A86B'} onMouseLeave={e=>e.target.style.color='rgba(237,245,242,0.78)'}>{l}</a>
+          ))}
+          <div style={{ marginTop:'1.4rem' }}>
+            {page === 'propietarios'
+              ? <a href="#contacto" onClick={closeMob} style={{ ...S.btnPrimary, width:'100%', justifyContent:'center' }}>Consultar gratis</a>
+              : <a href="#contacto-arr" onClick={closeMob} style={{ ...S.btnGreen, width:'100%', justifyContent:'center' }}>Hablar por WhatsApp</a>
+            }
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @media(max-width:860px){.desktop-nav{display:none!important}}
+        @media(min-width:861px){.mob-menu-btn{display:none!important}}
+      `}</style>
+    </>
+  );
+};
+
+/* ─── HOME PAGE — SPLIT ─── */
+const HomePage = ({ setPage }) => {
+  const [hov, setHov] = useState(null);
+  const isMobile = useIsMobile();
+  return (
+    <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column' }}>
+      {/* Brand bar */}
+      {isMobile && <>
+        <div style={{ padding:'5.5rem 5vw 0.8rem', display:'flex', justifyContent:'center', flexShrink:0 }}>
+          <Logo size="lg" />
+        </div>
+        <div style={{ textAlign:'center', marginBottom:'0.5rem', flexShrink:0 }}>
+          <span style={{ ...S.tag, display:'inline', fontSize:'0.58rem' }}>Puertecillo · Chile · Surf</span>
+        </div>
+      </>}
+
+      {/* Split */}
+      <div style={{ flex:1, display:'flex', flexDirection: isMobile?'column':'row', minHeight: isMobile?'auto':'0' }}>
+
+        {/* PROPIETARIOS */}
+        <div
+          onMouseEnter={() => !isMobile && setHov('p')} onMouseLeave={() => setHov(null)}
+          onClick={() => setPage('propietarios')}
+          style={{ flex: isMobile?'none':hov==='a'?0.38:hov==='p'?0.62:0.5, minHeight: isMobile?'48vh':'auto', transition:'flex 0.5s cubic-bezier(0.4,0,0.2,1)', background:'#0A1C27', borderRight: isMobile?'none':'1px solid rgba(200,168,107,0.18)', borderBottom: isMobile?'1px solid rgba(200,168,107,0.18)':'none', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding: isMobile?'2.5rem 6vw':'4.5rem 5vw 2rem', cursor:'pointer', textAlign:'center', position:'relative', overflow:'hidden' }}>
+          <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize: isMobile?'40vw':'22vw', color:'rgba(200,168,107,0.03)', userSelect:'none', whiteSpace:'nowrap', pointerEvents:'none', top:'50%', left:'50%', transform:'translate(-50%,-50%)' }}>CASA</div>
+          <span style={{ ...S.tag, textAlign:'center', marginBottom:'0.5rem' }}>Para propietarios</span>
+          <h2 style={{ ...S.title, fontSize: isMobile?'2.6rem':'clamp(2.2rem,4vw,3.8rem)', marginBottom:'0.8rem', position:'relative' }}>
+            Convierte tu<br/>propiedad en<br/><span style={{ color:'#C8A86B' }}>un negocio</span>
+          </h2>
+          {!isMobile && <p style={{ fontFamily:'DM Sans,sans-serif', fontSize:'0.88rem', fontStyle:'italic', color:'rgba(237,245,242,0.62)', lineHeight:1.7, maxWidth:'320px', marginBottom:'1.6rem', position:'relative' }}>
+            Administramos tu propiedad de principio a fin. Tú cobras — nosotros operamos.
+          </p>}
+          <button style={{ ...S.btnOutline, border:'1px solid rgba(237,245,242,0.45)', color:'#EDF5F2', position:'relative', pointerEvents:'none', marginTop: isMobile?'1rem':'0' }}>Soy propietario →</button>
+          {!isMobile && <div style={{ display:'flex', gap:'2rem', marginTop:'2rem', position:'relative' }}>
+            {[['12','Props activas'],['87%','Ocupación'],['★4.85','Rating']].map(([n,l]) => (
+              <div key={l} style={{ textAlign:'center' }}>
+                <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'1.6rem', color:'#C8A86B', lineHeight:1 }}>{n}</div>
+                <div style={{ fontSize:'0.55rem', letterSpacing:'0.18em', color:'rgba(237,245,242,0.35)', textTransform:'uppercase', marginTop:'2px' }}>{l}</div>
+              </div>
+            ))}
+          </div>}
+        </div>
+
+        {/* CENTER — logo divider */}
+        {!isMobile && (
+          <div style={{ width:'160px', flexShrink:0, background:'#050D14', borderLeft:'1px solid rgba(200,168,107,0.2)', borderRight:'1px solid rgba(200,168,107,0.2)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'4.5rem 1.2rem 2rem', position:'relative', zIndex:1 }}>
+            <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse at center, rgba(200,168,107,0.06) 0%, transparent 70%)', pointerEvents:'none' }} />
+            <Logo size="lg" />
+            <span style={{ ...S.tag, textAlign:'center', marginTop:'1rem', marginBottom:0, fontSize:'0.55rem' }}>Puertecillo · Chile · Surf</span>
+          </div>
+        )}
+
+        {/* ARRENDATARIOS */}
+        <div
+          onMouseEnter={() => !isMobile && setHov('a')} onMouseLeave={() => setHov(null)}
+          onClick={() => setPage('arrendar')}
+          style={{ flex: isMobile?'none':hov==='p'?0.38:hov==='a'?0.62:0.5, minHeight: isMobile?'48vh':'auto', transition:'flex 0.5s cubic-bezier(0.4,0,0.2,1)', background:'#1B3D52', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding: isMobile?'2.5rem 6vw':'4.5rem 5vw 2rem', cursor:'pointer', textAlign:'center', position:'relative', overflow:'hidden' }}>
+          <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize: isMobile?'40vw':'22vw', color:'rgba(200,168,107,0.03)', userSelect:'none', whiteSpace:'nowrap', pointerEvents:'none', top:'50%', left:'50%', transform:'translate(-50%,-50%)' }}>OLA</div>
+          <span style={{ ...S.tag, textAlign:'center', marginBottom:'0.5rem' }}>Para huéspedes</span>
+          <h2 style={{ ...S.title, fontSize: isMobile?'2.6rem':'clamp(2.2rem,4vw,3.8rem)', marginBottom:'0.8rem', position:'relative' }}>
+            Vive<br/>Puertecillo<br/><span style={{ color:'#C8A86B' }}>al máximo</span>
+          </h2>
+          {!isMobile && <p style={{ fontFamily:'DM Sans,sans-serif', fontSize:'0.88rem', fontStyle:'italic', color:'rgba(237,245,242,0.68)', lineHeight:1.7, maxWidth:'320px', marginBottom:'1.6rem', position:'relative' }}>
+            12 propiedades seleccionadas frente al Pacífico, a pasos de las mejores olas de Chile.
+          </p>}
+          <button style={{ ...S.btnPrimary, background:'#C8A86B', border:'1px solid #C8A86B', color:'#0A1C27', position:'relative', pointerEvents:'none', marginTop: isMobile?'1rem':'0' }}>Ver propiedades →</button>
+          {!isMobile && <div style={{ display:'flex', gap:'2rem', marginTop:'2rem', position:'relative' }}>
+            {[['12','Propiedades'],['★4.85','Rating medio'],['Airbnb','Reserva segura']].map(([n,l]) => (
+              <div key={l} style={{ textAlign:'center' }}>
+                <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'1.6rem', color:'#C8A86B', lineHeight:1 }}>{n}</div>
+                <div style={{ fontSize:'0.55rem', letterSpacing:'0.18em', color:'rgba(237,245,242,0.4)', textTransform:'uppercase', marginTop:'2px' }}>{l}</div>
+              </div>
+            ))}
+          </div>}
+        </div>
+      </div>
+
+      {/* Footer strip */}
+      <div style={{ padding:'1.2rem 5vw', borderTop:'1px solid rgba(200,168,107,0.1)', display:'flex', justifyContent:'center', gap:'3rem', flexShrink:0, flexWrap:'wrap' }}>
+        {['+56 9 9290 8598','hola@staypuerte.cl','Puertecillo, VI Región'].map(t => (
+          <span key={t} style={{ fontSize:'0.68rem', color:'rgba(237,245,242,0.3)', letterSpacing:'0.15em', textTransform:'uppercase' }}>{t}</span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ─── AVAILABILITY CALENDAR ─── */
+const AvCalendar = ({ propId }) => {
+  const today = new Date(2026, 3, 25);
+  const months = [{ y:2026, m:4, label:'Abril 2026' }, { y:2026, m:5, label:'Mayo 2026' }];
+  return (
+    <div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1.5rem' }}>
+        {months.map(({ y, m, label }) => {
+          const busy = busyDates(propId, y, m);
+          const firstDow = (new Date(y, m - 1, 1).getDay() + 6) % 7;
+          const total = new Date(y, m, 0).getDate();
+          const cells = [...Array(firstDow).fill(null), ...Array.from({ length: total }, (_, i) => i + 1)];
+          return (
+            <div key={m}>
+              <div style={{ fontFamily:'Bebas Neue,sans-serif', letterSpacing:'0.1em', fontSize:'0.9rem', color:'#C8A86B', marginBottom:'0.6rem' }}>{label}</div>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:'2px', fontSize:'0.68rem' }}>
+                {['L','M','X','J','V','S','D'].map(d => <div key={d} style={{ textAlign:'center', color:'rgba(237,245,242,0.3)', padding:'3px 0' }}>{d}</div>)}
+                {cells.map((d, i) => {
+                  if (!d) return <div key={`e${i}`} />;
+                  const isPast = new Date(y, m - 1, d) < today;
+                  const isToday = y===2026 && m===4 && d===25;
+                  const isBusy = busy.has(d);
+                  return (
+                    <div key={d} style={{ textAlign:'center', padding:'4px 1px', borderRadius:'3px',
+                      background: isToday ? '#C8A86B' : isBusy ? 'rgba(212,94,40,0.2)' : isPast ? 'transparent' : 'rgba(37,211,102,0.1)',
+                      color: isToday ? '#0A1C27' : isPast ? 'rgba(237,245,242,0.18)' : isBusy ? '#D45E28' : '#4ade80',
+                      fontWeight: isToday ? 700 : 400,
+                    }}>{d}</div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ display:'flex', gap:'1.5rem', marginTop:'0.8rem' }}>
+        <span style={{ fontSize:'0.68rem', color:'#4ade80' }}>● Disponible</span>
+        <span style={{ fontSize:'0.68rem', color:'#D45E28' }}>● Ocupado</span>
+        <span style={{ fontSize:'0.68rem', color:'#C8A86B' }}>■ Hoy</span>
+      </div>
+    </div>
+  );
+};
+
+/* ─── PROPERTY MODAL ─── */
+const PropModal = ({ prop, onClose }) => {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+  return (
+    <div style={{ position:'fixed', top:0, left:0, right:0, bottom:0, width:'100vw', height:'100vh', zIndex:500, display:'flex', alignItems:'center', justifyContent:'center', padding:'1rem' }}>
+      <div style={{ position:'absolute', top:0, left:0, right:0, bottom:0, background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }} onClick={onClose} />
+      <div style={{ position:'relative', background:'#0A1C27', border:'1px solid rgba(200,168,107,0.2)', width:'100%', maxWidth:'680px', maxHeight:'90vh', overflowY:'auto', padding:'1.5rem', animation:'slideUp 0.3s ease' }}>
+        <button onClick={onClose} style={{ position:'absolute', top:'1.2rem', right:'1.2rem', background:'none', border:'none', color:'rgba(237,245,242,0.45)', fontSize:'1.3rem', cursor:'pointer', lineHeight:1 }}>✕</button>
+
+        <div style={{ display:'inline-block', background:'rgba(212,94,40,0.15)', border:'1px solid rgba(212,94,40,0.3)', padding:'0.25rem 0.7rem', fontSize:'0.6rem', letterSpacing:'0.2em', textTransform:'uppercase', color:'#D45E28', marginBottom:'0.8rem' }}>{prop.type}</div>
+        <div style={{ ...S.title, fontSize:'2.2rem', marginBottom:'0.5rem' }}>{prop.name}</div>
+        <p style={{ fontSize:'0.88rem', fontStyle:'italic', color:'rgba(237,245,242,0.58)', lineHeight:1.75, marginBottom:'1.5rem' }}>{prop.desc}</p>
+
+        <div style={{ display:'flex', gap:'2rem', flexWrap:'wrap', marginBottom:'1.8rem', paddingBottom:'1.5rem', borderBottom:'1px solid rgba(200,168,107,0.12)' }}>
+          {[[`👤 ${prop.pax} personas`,''], [`🛏 ${prop.beds} camas`,''], [`★ ${prop.rating}`,'#C8A86B'], [`${fmtPrice(prop.price)} / noche`,'#EDF5F2']].map(([v,c]) => (
+            <div key={v} style={{ fontSize:'0.82rem', color: c || 'rgba(237,245,242,0.55)' }}>{v}</div>
+          ))}
+        </div>
+
+        <div style={{ marginBottom:'1.8rem' }}>
+          <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'1rem', letterSpacing:'0.12em', color:'#C8A86B', marginBottom:'1rem' }}>DISPONIBILIDAD — PROTOTIPO</div>
+          <AvCalendar propId={prop.id} />
+        </div>
+
+        <div style={{ display:'flex', gap:'0.8rem', flexWrap:'wrap' }}>
+          {prop.airbnb && <a href={prop.airbnb} target="_blank" rel="noopener" style={S.btnPrimary}>Ver en Airbnb</a>}
+          <a href={`https://wa.me/56992908598?text=${encodeURIComponent(`Hola, me interesa la propiedad ${prop.name} en StayPuerte`)}`} target="_blank" rel="noopener" style={S.btnGreen}>Consultar por WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─── PROPERTY CARD ─── */
+const PropCard = ({ prop, onClick }) => {
+  const [hov, setHov] = useState(false);
+  const handleClick = () => { if (prop.detail) window.location.href = prop.detail; else onClick(); };
+  return (
+    <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{ ...S.card, cursor:'pointer', transform: hov ? 'translateY(-5px)' : 'none', borderColor: hov ? 'rgba(200,168,107,0.38)' : 'rgba(200,168,107,0.13)' }}
+      onClick={handleClick}>
+      <div style={{ position:'relative' }}>
+        {prop.img
+          ? <div style={{ width:'100%', height:'200px', overflow:'hidden' }}><img src={prop.img} alt={prop.name} style={{ width:'100%', height:'100%', objectFit:'cover', transition:'transform 0.4s', transform: hov?'scale(1.05)':'scale(1)' }} /></div>
+          : <PropImg name={prop.name} color={`hsl(${200 + prop.id * 7}, 30%, ${10 + prop.id % 5}%)`} />
+        }
+        <div style={{ position:'absolute', top:'0.8rem', left:'0.8rem', background:'#D45E28', color:'#EDF5F2', fontSize:'0.58rem', letterSpacing:'0.2em', textTransform:'uppercase', padding:'0.25rem 0.65rem' }}>Disponible</div>
+        <div style={{ position:'absolute', top:'0.8rem', right:'0.8rem', background:'rgba(10,28,39,0.85)', color:'#C8A86B', fontSize:'0.72rem', padding:'0.25rem 0.6rem', fontFamily:'DM Sans,sans-serif' }}>★ {prop.rating}</div>
+        {prop.detail && <div style={{ position:'absolute', bottom:'0.8rem', right:'0.8rem', background:'rgba(10,28,39,0.85)', color:'rgba(237,245,242,0.7)', fontSize:'0.58rem', letterSpacing:'0.15em', textTransform:'uppercase', padding:'0.25rem 0.65rem' }}>Ver detalle →</div>}
+      </div>
+      <div style={{ padding:'1.5rem' }}>
+        <div style={{ fontSize:'0.6rem', letterSpacing:'0.3em', textTransform:'uppercase', color:'#C8A86B', marginBottom:'0.4rem' }}>{prop.type}</div>
+        <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'1.35rem', letterSpacing:'0.04em', color:'#EDF5F2', marginBottom:'0.4rem' }}>{prop.name}</div>
+        <p style={{ fontSize:'0.8rem', fontStyle:'italic', color:'rgba(237,245,242,0.48)', lineHeight:1.6, marginBottom:'1rem', minHeight:'2.5rem' }}>{prop.desc}</p>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <div style={{ display:'flex', gap:'1rem' }}>
+            <span style={{ fontSize:'0.68rem', color:'rgba(237,245,242,0.4)' }}>👤 {prop.pax}</span>
+            <span style={{ fontSize:'0.68rem', color:'rgba(237,245,242,0.4)' }}>🛏 {prop.beds}</span>
+          </div>
+          <div style={{ fontFamily:'DM Sans,sans-serif', fontSize:'0.82rem', fontWeight:400, color:'#EDF5F2' }}>{fmtPrice(prop.price)}<span style={{ color:'rgba(237,245,242,0.35)', fontSize:'0.68rem' }}>/noche</span></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─── ARRENDAR PAGE ─── */
+const ArrendatariosPage = ({ setPage }) => {
+  const [filters, setFilters] = useState({ tipo:'Todos', pax:'Todos', precio:'Todos' });
+  const [sort, setSort] = useState('rating');
+  const isMobile = useIsMobile();
+  const [modal, setModal] = useState(null);
+  const [sent, setSent] = useState(false);
+
+  const tipos = ['Todos', 'Cabaña', 'Casa'];
+  const paxOpts = ['Todos', '1–2 personas', '3–4 personas', '5–6 personas', '7+ personas'];
+  const precioOpts = ['Todos', 'Hasta $80.000', '$80.000–$140.000', 'Más de $140.000'];
+
+  const filtered = PROPS.filter(p => {
+    if (filters.tipo !== 'Todos' && p.type !== filters.tipo) return false;
+    if (filters.pax === '1–2 personas' && p.pax > 2) return false;
+    if (filters.pax === '3–4 personas' && (p.pax < 3 || p.pax > 4)) return false;
+    if (filters.pax === '5–6 personas' && (p.pax < 5 || p.pax > 6)) return false;
+    if (filters.pax === '7+ personas' && p.pax < 7) return false;
+    if (filters.precio === 'Hasta $80.000' && p.price > 80000) return false;
+    if (filters.precio === '$80.000–$140.000' && (p.price < 80000 || p.price > 140000)) return false;
+    if (filters.precio === 'Más de $140.000' && p.price < 140000) return false;
+    return true;
+  }).sort((a, b) => sort === 'asc' ? a.price - b.price : sort === 'desc' ? b.price - a.price : b.rating - a.rating);
+
+  const chipStyle = (active) => ({
+    padding:'0.45rem 1rem', fontSize:'0.7rem', letterSpacing:'0.12em', textTransform:'uppercase',
+    fontFamily:'DM Sans,sans-serif', border: active ? '1px solid #C8A86B' : '1px solid rgba(200,168,107,0.22)',
+    background: active ? 'rgba(200,168,107,0.12)' : 'transparent', color: active ? '#C8A86B' : 'rgba(237,245,242,0.5)',
+    cursor:'pointer', transition:'all 0.25s', whiteSpace:'nowrap',
+  });
+
+  const enviarWA = () => {
+    const n = document.getElementById('arr-nombre').value.trim();
+    const t = document.getElementById('arr-tel').value.trim();
+    const m = document.getElementById('arr-msg').value.trim();
+    if (!n || !t) return alert('Por favor ingresa tu nombre y teléfono.');
+    const txt = `Hola StayPuerte, soy ${n}. Tel: ${t}. ${m || 'Quiero info sobre propiedades.'}`;
+    setSent(true);
+    setTimeout(() => window.open(`https://wa.me/56992908598?text=${encodeURIComponent(txt)}`, '_blank'), 500);
+    setTimeout(() => setSent(false), 3000);
+  };
+
+  return (
+    <div style={{ paddingTop:'80px' }} className="fade-in">
+
+      {/* HERO */}
+      <section style={{ background:'#1B3D52', padding:'6rem 5vw 5rem', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'28vw', color:'rgba(200,168,107,0.03)', right:'-2rem', top:'50%', transform:'translateY(-50%)', userSelect:'none', pointerEvents:'none', lineHeight:1 }}>OLA</div>
+        <div style={{ maxWidth:'700px', position:'relative' }}>
+          <span style={S.tag}>Propiedades en Puertecillo</span>
+          <h1 style={{ ...S.title, fontSize:'clamp(3rem,7vw,6rem)', marginBottom:'1.2rem' }}>
+            Vive<br/>Puertecillo<br/><span style={{ color:'#C8A86B' }}>al máximo</span>
+          </h1>
+          <p style={{ fontSize:'1rem', fontStyle:'italic', color:'rgba(237,245,242,0.6)', lineHeight:1.8, maxWidth:'480px' }}>
+            Cabañas, lodges y casas frente al Pacífico. A pasos de las mejores olas de Chile — con todos los servicios incluidos.
+          </p>
+        </div>
+      </section>
+
+      {/* FILTERS */}
+      <div id="propiedades" style={{ background:'#0A1C27', borderBottom:'1px solid rgba(200,168,107,0.1)', padding:'0.8rem 5vw' }}>
+        <div style={{ display:'flex', gap:'0.7rem', alignItems:'center', flexWrap: isMobile?'wrap':'nowrap' }}>
+          <span style={{ fontSize:'0.58rem', letterSpacing:'0.22em', color:'rgba(237,245,242,0.3)', textTransform:'uppercase', flexShrink:0 }}>Filtrar</span>
+          {[
+            { key:'tipo',   opts: tipos,       placeholder:'Tipo' },
+            { key:'pax',    opts: paxOpts,     placeholder:'Personas' },
+            { key:'precio', opts: precioOpts,  placeholder:'Precio' },
+          ].map(({ key, opts, placeholder }) => (
+            <select key={key} value={filters[key]}
+              onChange={e => setFilters(f => ({ ...f, [key]: e.target.value }))}
+              style={{ background:'rgba(27,61,82,0.35)', border:'1px solid rgba(200,168,107,0.2)', color: filters[key]==='Todos'?'rgba(237,245,242,0.5)':'#C8A86B', fontSize:'0.68rem', letterSpacing:'0.08em', textTransform:'uppercase', padding:'0.42rem 2rem 0.42rem 0.7rem', cursor:'pointer', outline:'none', fontFamily:'DM Sans,sans-serif', width:'auto', transition:'border-color 0.25s', backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M0 0l4.5 5 4.5-5z' fill='rgba(200,168,107,0.45)'/%3E%3C/svg%3E")`, backgroundRepeat:'no-repeat', backgroundPosition:'right 0.55rem center', WebkitAppearance:'none', appearance:'none', minWidth:'90px' }}
+            >
+              {opts.map(t => <option key={t} value={t} style={{ background:'#0A1C27', color:'#EDF5F2' }}>{t}</option>)}
+            </select>
+          ))}
+          <div style={{ width:'1px', height:'18px', background:'rgba(200,168,107,0.12)', flexShrink:0 }} />
+          <div style={{ display:'flex', gap:'0.3rem' }}>
+            {[['rating','★ Top'],['asc','$ ↑'],['desc','$ ↓']].map(([v,l]) =>
+              <button key={v} style={{ ...chipStyle(sort===v), padding:'0.38rem 0.65rem', fontSize:'0.65rem' }} onClick={() => setSort(v)}>{l}</button>
+            )}
+          </div>
+          <span style={{ marginLeft:'auto', fontSize:'0.6rem', color:'rgba(237,245,242,0.28)', letterSpacing:'0.14em', whiteSpace:'nowrap', flexShrink:0 }}>
+            {filtered.length} prop{filtered.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+      </div>
+
+      {/* GRID */}
+      <section style={{ background:'#0A1C27', padding: isMobile?'2rem 4vw 4rem':'3rem 5vw 6rem' }}>
+        {filtered.length === 0
+          ? <div style={{ textAlign:'center', padding:'4rem', color:'rgba(237,245,242,0.35)', fontStyle:'italic' }}>No hay propiedades que coincidan con los filtros.</div>
+          : <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'repeat(auto-fill,minmax(300px,1fr))', gap:'1.2rem' }}>
+              {filtered.map(p => <PropCard key={p.id} prop={p} onClick={() => setModal(p)} />)}
+            </div>
+        }
+      </section>
+
+      {/* EXTRAS */}
+      <section id="extras" style={{ background:'#1B3D52', padding: isMobile?'4rem 5vw':'6rem 5vw', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'18vw', color:'rgba(200,168,107,0.03)', left:'-1rem', top:'50%', transform:'translateY(-50%)', userSelect:'none', pointerEvents:'none' }}>EXTRA</div>
+        <div style={{ marginBottom: isMobile?'2rem':'4rem', position:'relative' }}>
+          <span style={S.tag}>Servicios incluidos</span>
+          <h2 style={{ ...S.title, fontSize:'clamp(2.5rem,5vw,4rem)' }}>Más que<br/><span style={{ color:'#C8A86B' }}>alojamiento</span></h2>
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr 1fr':'repeat(auto-fill,minmax(240px,1fr))', gap:'1px', background:'rgba(200,168,107,0.1)', border:'1px solid rgba(200,168,107,0.1)', position:'relative' }}>
+          {EXTRAS.map(e => (
+            <div key={e.t} style={{ background:'#1B3D52', padding:'2.2rem 2rem', transition:'background 0.35s', cursor:'default' }}
+              onMouseEnter={ev => ev.currentTarget.style.background='#0A1C27'} onMouseLeave={ev => ev.currentTarget.style.background='#1B3D52'}>
+              <div style={{ fontSize:'1.6rem', marginBottom:'1rem' }}>{e.icon}</div>
+              <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'1.15rem', letterSpacing:'0.05em', color:'#EDF5F2', marginBottom:'0.5rem' }}>{e.t}</div>
+              <p style={{ fontSize:'0.82rem', fontStyle:'italic', color:'rgba(237,245,242,0.5)', lineHeight:1.7 }}>{e.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section id="contacto-arr" style={{ background:'#0A1C27', padding: isMobile?'4rem 5vw':'7rem 5vw', textAlign:'center', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'22vw', color:'rgba(27,61,82,0.25)', top:'50%', left:'50%', transform:'translate(-50%,-50%)', userSelect:'none', whiteSpace:'nowrap', pointerEvents:'none' }}>PUERTE</div>
+        <div style={{ position:'relative', maxWidth:'600px', margin:'0 auto' }}>
+          <span style={{ ...S.tag, textAlign:'center' }}>Reserva ahora</span>
+          <h2 style={{ ...S.title, fontSize: isMobile?'2.5rem':'clamp(2.8rem,5.5vw,5rem)', marginBottom:'1.5rem' }}>
+            ¿Listo para<br/>tu próxima<br/><span style={{ color:'#C8A86B' }}>estadía?</span>
+          </h2>
+          <p style={{ fontSize:'0.95rem', fontStyle:'italic', color:'rgba(237,245,242,0.55)', marginBottom:'2.5rem', lineHeight:1.8 }}>Escríbenos por WhatsApp o llena el formulario y te respondemos al tiro.</p>
+          <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap:'2rem', textAlign:'left', marginBottom:'2.5rem' }}>
+            <div style={{ display:'flex', flexDirection:'column', gap:'0.8rem' }}>
+              <span style={{ fontSize:'0.62rem', letterSpacing:'0.25em', textTransform:'uppercase', color:'#C8A86B' }}>Escríbenos</span>
+              <input id="arr-nombre" type="text" placeholder="Tu nombre" />
+              <input id="arr-tel" type="tel" placeholder="Tu teléfono (+56…)" />
+              <textarea id="arr-msg" placeholder="¿Qué propiedad te interesa? ¿Qué fechas?" style={{ height:'100px', resize:'none' }}></textarea>
+              <button onClick={enviarWA} style={{ ...S.btnGreen, justifyContent:'center', opacity: sent ? 0.7 : 1, background:'rgba(237,245,242,0.12)', border:'1px solid rgba(237,245,242,0.18)', color:'rgba(237,245,242,0.7)', width:'100%', height:'52px' }}>
+                {sent ? '✓ Redirigiendo...' : '💬 Enviar por WhatsApp'}
+              </button>
+            </div>
+            {!isMobile && (
+              <div style={{ display:'flex', flexDirection:'column', gap:'0.8rem' }}>
+                <span style={{ fontSize:'0.62rem', letterSpacing:'0.25em', textTransform:'uppercase', color:'#C8A86B' }}>Ubicación</span>
+                <div style={{ flex:1, minHeight:'200px', border:'1px solid rgba(200,168,107,0.15)', overflow:'hidden' }}>
+                  <iframe src="https://maps.google.com/maps?q=W26Q%2BJJ+Litueche%2C+Chile&output=embed&hl=es&z=14" style={{ width:'100%', height:'100%', minHeight:'200px', border:'none', filter:'saturate(0.6) brightness(0.8)' }} loading="lazy" title="StayPuerte"></iframe>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer style={{ background:'#050f16', borderTop:'1px solid rgba(200,168,107,0.1)', padding: isMobile?'2rem 5vw':'2.5rem 5vw', display:'flex', flexDirection: isMobile?'column':'row', alignItems: isMobile?'flex-start':'center', justifyContent:'space-between', flexWrap:'wrap', gap:'1.2rem' }}>
+        <Logo onClick={() => setPage('home')} />
+        <div style={{ display:'flex', flexDirection: isMobile?'column':'row', gap: isMobile?'0.6rem':'2rem', flexWrap:'wrap' }}>
+          {['+56 9 9290 8598','hola@staypuerte.cl','Puertecillo, Chile'].map(t => (
+            <span key={t} style={{ fontSize:'0.68rem', color:'rgba(237,245,242,0.3)', letterSpacing:'0.12em', textTransform:'uppercase' }}>{t}</span>
+          ))}
+        </div>
+        <span style={{ fontSize:'0.68rem', color:'rgba(237,245,242,0.2)' }}>© 2026 StayPuerte</span>
+      </footer>
+
+      {modal && <PropModal prop={modal} onClose={() => setModal(null)} />}
+    </div>
+  );
+};
+
+/* ─── PROPIETARIOS PAGE ─── */
+const FAQ = () => {
+  const [open, setOpen] = useState(null);
+  return (
+    <div style={{ maxWidth:'720px', margin:'0 auto' }}>
+      {FAQS.map((f, i) => (
+        <div key={i} style={{ borderBottom:'1px solid rgba(200,168,107,0.12)' }}>
+          <button onClick={() => setOpen(open === i ? null : i)}
+            style={{ width:'100%', background:'none', border:'none', color:'#EDF5F2', fontFamily:'DM Sans,sans-serif', fontSize:'0.95rem', fontWeight:400, padding:'1.4rem 0', display:'flex', justifyContent:'space-between', alignItems:'center', cursor:'pointer', textAlign:'left', gap:'1rem' }}>
+            <span>{f.q}</span>
+            <span style={{ color:'#C8A86B', fontSize:'1.2rem', flexShrink:0, transition:'transform 0.3s', transform: open === i ? 'rotate(45deg)' : 'rotate(0)' }}>+</span>
+          </button>
+          {open === i && (
+            <div style={{ paddingBottom:'1.4rem', fontSize:'0.87rem', fontStyle:'italic', color:'rgba(237,245,242,0.58)', lineHeight:1.8, animation:'slideUp 0.25s ease' }}>{f.a}</div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const PropietariosPage = ({ setPage }) => {
+  const [sent, setSent] = useState(false);
+  const isMobile = useIsMobile();
+  const enviar = () => {
+    const n = document.getElementById('pn').value.trim();
+    const t = document.getElementById('pt').value.trim();
+    const m = document.getElementById('pm').value.trim();
+    if (!n || !t) return alert('Por favor ingresa tu nombre y teléfono.');
+    const txt = `Hola StayPuerte, soy ${n}. Tel: ${t}. ${m || 'Quiero una evaluación gratuita de mi propiedad.'}`;
+    setSent(true);
+    setTimeout(() => window.open(`https://wa.me/56992908598?text=${encodeURIComponent(txt)}`, '_blank'), 500);
+    setTimeout(() => setSent(false), 3000);
+  };
+
+  return (
+    <div style={{ paddingTop:'80px' }} className="fade-in">
+
+      {/* HERO */}
+      <section style={{ background:'#0A1C27', padding: isMobile?'5rem 5vw 4rem':'6rem 5vw 5rem', position:'relative', overflow:'hidden', minHeight: isMobile?'auto':'85vh', display:'flex', alignItems:'center' }}>
+        <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'28vw', color:'rgba(200,168,107,0.03)', right:'-1rem', top:'50%', transform:'translateY(-50%)', userSelect:'none', pointerEvents:'none', lineHeight:1 }}>STAY</div>
+        <div style={{ maxWidth:'700px', position:'relative' }}>
+          <span style={S.tag}>Para propietarios</span>
+          <h1 style={{ ...S.title, fontSize: isMobile?'3rem':'clamp(3.2rem,7vw,6.5rem)', marginBottom:'1.4rem' }}>
+            Convierte<br/>tu propiedad<br/><span style={{ color:'#C8A86B' }}>en un negocio</span>
+          </h1>
+          <p style={{ fontSize:'1rem', fontStyle:'italic', color:'rgba(237,245,242,0.6)', lineHeight:1.8, maxWidth:'500px', marginBottom:'2.5rem' }}>
+            Administramos tu propiedad en Puertecillo de principio a fin — desde publicarla hasta recibir al último huésped. Tú cobras, nosotros operamos.
+          </p>
+          <div style={{ display:'flex', gap:'1rem', flexWrap:'wrap' }}>
+            <a href="#contacto" style={{ ...S.btnPrimary, fontSize: isMobile?'0.72rem':'0.78rem' }}>Evaluación gratuita</a>
+            {!isMobile && <a href="#servicios" style={S.btnOutline}>Ver servicios</a>}
+          </div>
+        </div>
+      </section>
+
+      {/* STATS */}
+      <div style={{ background:'#1B3D52', borderTop:'1px solid rgba(200,168,107,0.15)', borderBottom:'1px solid rgba(200,168,107,0.15)', padding: isMobile?'2rem 5vw':'2.5rem 5vw', display:'grid', gridTemplateColumns: isMobile?'repeat(2,1fr)':'repeat(4,1fr)', gap: isMobile?'1.5rem':'2rem', textAlign:'center' }}>
+        {[['12','Propiedades activas'],['87%','Ocupación promedio'],['★4.85','Rating Airbnb'],['0','Problemas para el dueño']].map(([n,l]) => (
+          <div key={l}>
+            <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'3.2rem', color:'#C8A86B', lineHeight:1 }}>{n}</div>
+            <div style={{ fontSize:'0.65rem', letterSpacing:'0.22em', textTransform:'uppercase', color:'rgba(237,245,242,0.45)', marginTop:'0.4rem' }}>{l}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* SERVICIOS */}
+      <section id="servicios" style={{ background:'#0A1C27', padding: isMobile?'4rem 5vw':'7rem 5vw' }}>
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'1.5rem':'4rem', alignItems:'end', marginBottom: isMobile?'2rem':'4rem' }}>
+          <div>
+            <span style={S.tag}>Lo que hacemos</span>
+            <h2 style={{ ...S.title, fontSize: isMobile?'2.8rem':'clamp(2.5rem,5vw,4.5rem)' }}>Gestión<br/>integral<br/>del negocio</h2>
+          </div>
+          <p style={{ fontSize:'0.95rem', fontStyle:'italic', color:'rgba(237,245,242,0.55)', lineHeight:1.85 }}>Nos encargamos de todo — desde publicar tu propiedad hasta recibir al último huésped de la temporada.</p>
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'repeat(3,1fr)', gap:'1px', background:'rgba(200,168,107,0.1)', border:'1px solid rgba(200,168,107,0.1)' }}>
+          {SERVICES.map(s => (
+            <div key={s.t} style={{ background:'#0A1C27', padding:'2.8rem 2.4rem', transition:'background 0.35s', cursor:'default', position:'relative', overflow:'hidden' }}
+              onMouseEnter={ev => { ev.currentTarget.style.background='#1B3D52'; ev.currentTarget.querySelector('.bar').style.width='100%'; }}
+              onMouseLeave={ev => { ev.currentTarget.style.background='#0A1C27'; ev.currentTarget.querySelector('.bar').style.width='0'; }}>
+              <div className="bar" style={{ position:'absolute', top:0, left:0, height:'2px', width:0, background:'#C8A86B', transition:'width 0.4s' }} />
+              <div style={{ fontSize:'1.5rem', marginBottom:'1.2rem', color:'#C8A86B' }}>{s.icon}</div>
+              <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'1.2rem', letterSpacing:'0.05em', color:'#EDF5F2', marginBottom:'0.7rem' }}>{s.t}</div>
+              <p style={{ fontSize:'0.83rem', fontStyle:'italic', color:'rgba(237,245,242,0.5)', lineHeight:1.7 }}>{s.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* NOSOTROS */}
+      <section id="nosotros" style={{ background:'#1B3D52', padding: isMobile?'4rem 5vw':'7rem 5vw', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'20vw', color:'rgba(200,168,107,0.04)', right:'-1rem', top:'50%', transform:'translateY(-50%)', userSelect:'none', pointerEvents:'none' }}>PUERTE</div>
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'2.5rem':'5rem', alignItems:'center', position:'relative' }}>
+          <div>
+            <span style={S.tag}>Por qué elegirnos</span>
+            <h2 style={{ ...S.title, fontSize:'clamp(2.5rem,5vw,4.5rem)', marginBottom:'0.5rem' }}>No somos<br/>una agencia<br/><span style={{ color:'#C8A86B' }}>genérica</span></h2>
+            <ul style={{ listStyle:'none', marginTop:'2.5rem', display:'flex', flexDirection:'column', gap:'1.8rem' }}>
+              {[['01','Especialistas en Puertecillo','Conocemos la zona, la temporada de surf, los eventos locales y los huéspedes. No operamos en Santiago — operamos aquí.'],
+                ['02','Gestión boutique, no masiva','12 propiedades seleccionadas en Puertecillo. No somos un call center. Cada propiedad recibe atención personalizada y estrategia a medida.'],
+                ['03','Ingeniería detrás del negocio','Usamos datos, análisis de demanda y herramientas de gestión. Nada al azar — todo optimizado.'],
+              ].map(([n,t,d]) => (
+                <li key={n} style={{ display:'flex', gap:'1.3rem', paddingBottom:'1.8rem', borderBottom:'1px solid rgba(200,168,107,0.12)' }}>
+                  <span style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'2.2rem', color:'#C8A86B', opacity:0.38, lineHeight:1, minWidth:'2.2rem' }}>{n}</span>
+                  <div>
+                    <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'1.1rem', letterSpacing:'0.06em', color:'#EDF5F2', marginBottom:'0.35rem' }}>{t}</div>
+                    <p style={{ fontSize:'0.83rem', fontStyle:'italic', color:'rgba(237,245,242,0.5)', lineHeight:1.7 }}>{d}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div style={{ display: isMobile?'none':'flex', flexDirection:'column', gap:'0.8rem' }}>
+            {/* 12 — featured */}
+            <div style={{ background:'#0A1C27', border:'1px solid rgba(200,168,107,0.22)', padding:'2rem 1.5rem', textAlign:'center', position:'relative', overflow:'hidden' }}>
+              <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'7rem', color:'rgba(200,168,107,0.04)', top:'50%', left:'50%', transform:'translate(-50%,-50%)', userSelect:'none', pointerEvents:'none', lineHeight:1 }}>PUERTE</div>
+              <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'5.5rem', color:'#C8A86B', lineHeight:1, position:'relative' }}>12</div>
+              <div style={{ fontSize:'0.6rem', letterSpacing:'0.28em', textTransform:'uppercase', color:'rgba(237,245,242,0.42)', marginTop:'0.5rem' }}>Propiedades en Puertecillo</div>
+            </div>
+            {/* 6 stats 3×2 */}
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'0.8rem' }}>
+              {[
+                ['87%',   'Ocupación promedio'],
+                ['★4.85', 'Rating Airbnb'],
+                ['24/7',  'Soporte al huésped'],
+                ['15%',   'Comisión promedio'],
+                ['Gratis','Evaluación inicial'],
+                ['0',     'Problemas para el dueño'],
+              ].map(([n,l]) => (
+                <div key={l} style={{ background:'#0A1C27', border:'1px solid rgba(200,168,107,0.14)', padding:'1.4rem 0.8rem', textAlign:'center', transition:'border-color 0.3s' }}
+                  onMouseEnter={ev=>ev.currentTarget.style.borderColor='rgba(200,168,107,0.4)'} onMouseLeave={ev=>ev.currentTarget.style.borderColor='rgba(200,168,107,0.14)'}>
+                  <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'2rem', color:'#C8A86B', lineHeight:1 }}>{n}</div>
+                  <div style={{ fontSize:'0.56rem', letterSpacing:'0.18em', textTransform:'uppercase', color:'rgba(237,245,242,0.36)', marginTop:'0.45rem', lineHeight:1.4 }}>{l}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PROCESO / ONBOARDING */}
+      <section id="proceso" style={{ background:'#0A1C27', padding: isMobile?'4rem 5vw':'7rem 5vw' }}>
+        <div style={{ textAlign:'center', maxWidth:'600px', margin:'0 auto', marginBottom: isMobile?'2.5rem':'5rem' }}>
+          <span style={{ ...S.tag, textAlign:'center' }}>Cómo funciona</span>
+          <h2 style={{ ...S.title, fontSize: isMobile?'2.8rem':'clamp(2.5rem,5vw,4.5rem)' }}>Seis pasos.<br/><span style={{ color:'#C8A86B' }}>Sin complicaciones.</span></h2>
+        </div>
+        {isMobile ? (
+          /* Mobile: 2-col simple grid */
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'2rem' }}>
+            {ONBOARDING.map((s) => (
+              <div key={s.n} style={{ textAlign:'center' }}>
+                <div style={{ width:'4rem', height:'4rem', border:'1px solid #C8A86B', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 1.5rem', background:'#0A1C27', fontFamily:'Bebas Neue,sans-serif', fontSize:'1.1rem', color:'#C8A86B' }}>{s.n}</div>
+                <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'1.05rem', letterSpacing:'0.06em', color:'#EDF5F2', marginBottom:'0.5rem' }}>{s.t}</div>
+                <p style={{ fontSize:'0.78rem', fontStyle:'italic', color:'rgba(237,245,242,0.5)', lineHeight:1.65 }}>{s.d}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* Desktop: 2 rows of 3, each with its own connecting line */
+          <div style={{ display:'flex', flexDirection:'column', gap:'3rem' }}>
+            {[ONBOARDING.slice(0,3), ONBOARDING.slice(3,6)].map((row, ri) => (
+              <div key={ri} style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', position:'relative' }}>
+                <div style={{ position:'absolute', top:'2rem', left:'calc(16.6% + 2rem)', right:'calc(16.6% + 2rem)', height:'1px', background:'linear-gradient(to right, #C8A86B, rgba(200,168,107,0.2), #C8A86B)', zIndex:0 }} />
+                {row.map((s) => (
+                  <div key={s.n} style={{ padding:'0 2rem 3rem', textAlign:'center', position:'relative' }}>
+                    <div style={{ width:'4rem', height:'4rem', border:'1px solid #C8A86B', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 2rem', background:'#0A1C27', fontFamily:'Bebas Neue,sans-serif', fontSize:'1.1rem', color:'#C8A86B', position:'relative', zIndex:1 }}>{s.n}</div>
+                    <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'1.15rem', letterSpacing:'0.06em', color:'#EDF5F2', marginBottom:'0.7rem' }}>{s.t}</div>
+                    <p style={{ fontSize:'0.83rem', fontStyle:'italic', color:'rgba(237,245,242,0.5)', lineHeight:1.7 }}>{s.d}</p>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" style={{ background:'#1B3D52', padding: isMobile?'4rem 5vw':'7rem 5vw' }}>
+        <div style={{ textAlign:'center', marginBottom:'4rem' }}>
+          <span style={{ ...S.tag, textAlign:'center' }}>Preguntas frecuentes</span>
+          <h2 style={{ ...S.title, fontSize:'clamp(2.5rem,5vw,4rem)' }}>Todo lo que<br/><span style={{ color:'#C8A86B' }}>necesitas saber</span></h2>
+        </div>
+        <FAQ />
+      </section>
+
+      {/* CONTACTO */}
+      <section id="contacto" style={{ background:'#0A1C27', padding: isMobile?'4rem 5vw':'8rem 5vw', textAlign:'center', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'22vw', color:'rgba(27,61,82,0.25)', top:'50%', left:'50%', transform:'translate(-50%,-50%)', userSelect:'none', whiteSpace:'nowrap', pointerEvents:'none' }}>PUERTE</div>
+        <div style={{ position:'relative', maxWidth:'640px', margin:'0 auto' }}>
+          <div style={{ width:'40px', height:'1px', background:'#C8A86B', margin:'0 auto 2rem' }} />
+          <span style={{ ...S.tag, textAlign:'center' }}>Hablemos</span>
+          <h2 style={{ ...S.title, fontSize: isMobile?'2.5rem':'clamp(2.8rem,5.5vw,5.5rem)', marginBottom:'1.2rem' }}>
+            ¿Tienes una propiedad<br/>en <span style={{ color:'#C8A86B' }}>Puertecillo</span>?
+          </h2>
+          <p style={{ fontSize:'0.95rem', fontStyle:'italic', color:'rgba(237,245,242,0.52)', marginBottom:'2.5rem', lineHeight:1.8 }}>Evaluación gratuita, sin compromiso y sin letra chica.</p>
+          <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap:'2rem', textAlign:'left', marginBottom:'2.5rem' }}>
+            <div style={{ display:'flex', flexDirection:'column', gap:'0.8rem' }}>
+              <span style={{ fontSize:'0.62rem', letterSpacing:'0.25em', textTransform:'uppercase', color:'#C8A86B' }}>Formulario</span>
+              <input id="pn" type="text" placeholder="Tu nombre" />
+              <input id="pt" type="tel" placeholder="Tu teléfono (+56…)" />
+              <textarea id="pm" placeholder="Cuéntanos sobre tu propiedad…" style={{ height:'110px', resize:'none' }}></textarea>
+              <button onClick={enviar} style={{ ...S.btnGreen, justifyContent:'center', opacity:sent?0.7:1, background:'rgba(237,245,242,0.12)', border:'1px solid rgba(237,245,242,0.18)', color:'rgba(237,245,242,0.7)', width:'100%', height:'52px' }}>
+                {sent ? '✓ Redirigiendo...' : '💬 Enviar por WhatsApp'}
+              </button>
+              {isMobile && (
+                <a href="https://wa.me/56992908598?text=Hola%2C+quiero+info+sobre+StayPuerte" target="_blank" rel="noopener" style={{ ...S.btnGreen, justifyContent:'center', width:'100%', height:'52px' }}>WhatsApp directo</a>
+              )}
+            </div>
+            {!isMobile && (
+              <div style={{ display:'flex', flexDirection:'column', gap:'0.8rem' }}>
+                <span style={{ fontSize:'0.62rem', letterSpacing:'0.25em', textTransform:'uppercase', color:'#C8A86B' }}>Ubicación</span>
+                <div style={{ flex:1, minHeight:'220px', border:'1px solid rgba(200,168,107,0.15)', overflow:'hidden' }}>
+                  <iframe src="https://maps.google.com/maps?q=W26Q%2BJJ+Litueche%2C+Chile&output=embed&hl=es&z=14" style={{ width:'100%', height:'100%', minHeight:'220px', border:'none', filter:'saturate(0.6) brightness(0.8)' }} loading="lazy" title="StayPuerte"></iframe>
+                </div>
+                <a href="https://wa.me/56992908598?text=Hola%2C+quiero+info+sobre+StayPuerte" target="_blank" rel="noopener" style={{ ...S.btnGreen, justifyContent:'center', width:'100%', height:'52px', whiteSpace:'nowrap' }}
+                  onMouseEnter={e=>e.currentTarget.style.background='#1db954'} onMouseLeave={e=>e.currentTarget.style.background='#25D366'}>WhatsApp directo</a>
+              </div>
+            )}
+          </div>
+          <div style={{ display:'flex', justifyContent:'center', gap:'3rem', flexWrap:'wrap' }}>
+            {['+56 9 9290 8598','hola@staypuerte.cl','Puertecillo, VI Región'].map(t => (
+              <span key={t} style={{ fontSize:'0.7rem', color:'rgba(237,245,242,0.3)', letterSpacing:'0.12em', textTransform:'uppercase' }}>{t}</span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer style={{ background:'#050f16', borderTop:'1px solid rgba(200,168,107,0.1)', padding: isMobile?'2rem 5vw':'2.5rem 5vw', display:'flex', flexDirection: isMobile?'column':'row', alignItems: isMobile?'flex-start':'center', justifyContent:'space-between', flexWrap:'wrap', gap:'1.2rem' }}>
+        <Logo onClick={() => setPage('home')} />
+        <nav style={{ display:'flex', gap: isMobile?'1rem 1.8rem':'2rem', flexWrap:'wrap' }}>
+          {[['#servicios','Servicios'],['#nosotros','Nosotros'],['#proceso','Proceso'],['#faq','FAQ'],['#contacto','Contacto']].map(([h,l]) => (
+            <a key={h} href={h} style={{ fontSize:'0.68rem', color:'rgba(237,245,242,0.3)', letterSpacing:'0.18em', textTransform:'uppercase', textDecoration:'none', transition:'color 0.3s' }}
+              onMouseEnter={e=>e.target.style.color='#C8A86B'} onMouseLeave={e=>e.target.style.color='rgba(237,245,242,0.3)'}>{l}</a>
+          ))}
+        </nav>
+        <span style={{ fontSize:'0.68rem', color:'rgba(237,245,242,0.2)' }}>© 2026 StayPuerte</span>
+      </footer>
+    </div>
+  );
+};
+
+/* ─── APP ─── */
+const App = () => {
+  const [page, setPage] = useState('home');
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [page]);
+
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 55);
+    window.addEventListener('scroll', fn);
+    return () => window.removeEventListener('scroll', fn);
+  }, []);
+
+  const changePage = (p) => {
+    setPage(p);
+  };
+
+  return (
+    <>
+      <Nav page={page} setPage={changePage} scrolled={scrolled} />
+      {page === 'home'         && <HomePage setPage={changePage} />}
+      {page === 'propietarios' && <PropietariosPage setPage={changePage} />}
+      {page === 'arrendar'     && <ArrendatariosPage setPage={changePage} />}
+    </>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

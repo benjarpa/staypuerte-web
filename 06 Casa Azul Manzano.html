@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Casa Azul Manzano — StayPuerte</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--ocean:#0A1C27;--blue:#1B3D52;--foam:#EDF5F2;--sand:#C8A86B;--sunset:#D45E28;--green:#25D366}
+    html{scroll-behavior:smooth}
+    body{background:var(--ocean);color:var(--foam);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--ocean)}::-webkit-scrollbar-thumb{background:var(--sand);border-radius:2px}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .fade-in{animation:fadeIn 0.5s ease forwards}
+    @media(max-width:768px){.grid-layout{grid-template-columns:1fr!important}.sticky-card{position:static!important;top:auto!important}.photo-grid{grid-template-columns:1fr!important;grid-template-rows:300px!important}.thumb{display:none!important}}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const BASE = 'Propiedades%20Fotos/06%20Casa%20Azul%20Manzano/';
+const PHOTOS = [
+  {src:BASE+'01.jpeg',                                        alt:'Casa Azul Manzano — vista exterior'},
+  {src:BASE+'11984e04-1e0a-4fae-a110-4ffaed9f8c18.avif',    alt:'Casa Azul Manzano — foto 2'},
+  {src:BASE+'12004bf3-4820-4c72-bcfc-d26dd928c2c3.avif',    alt:'Casa Azul Manzano — foto 3'},
+  {src:BASE+'1263dc77-d145-4cf4-9bb4-79cbbd5486d2.avif',    alt:'Casa Azul Manzano — foto 4'},
+  {src:BASE+'1e1a21a4-f719-400a-bcb5-9cbf4050cadb.avif',    alt:'Casa Azul Manzano — foto 5'},
+  {src:BASE+'2240e959-7c84-4b57-8898-145263e23bb5.jpeg',    alt:'Casa Azul Manzano — foto 6'},
+  {src:BASE+'2d8b90c6-be87-47d7-8cda-01da417d6117.avif',    alt:'Casa Azul Manzano — foto 7'},
+  {src:BASE+'4b76b77e-2d05-4fff-b6dc-e6a6c284c7b3.jpg',     alt:'Casa Azul Manzano — foto 8'},
+  {src:BASE+'500be288-859a-4146-af8a-f372d3475958.avif',    alt:'Casa Azul Manzano — foto 9'},
+  {src:BASE+'53b12599-b40d-4712-b3ae-cedbf46a9c47.avif',    alt:'Casa Azul Manzano — foto 10'},
+  {src:BASE+'55375c4f-638d-40f1-9329-fbf80c0a6ae7.avif',    alt:'Casa Azul Manzano — foto 11'},
+  {src:BASE+'58612368-624a-4421-9865-4e622172a5e2.jpg',     alt:'Casa Azul Manzano — foto 12'},
+  {src:BASE+'5ab55701-8876-4161-b8e9-808bf352e24f.jpeg',    alt:'Casa Azul Manzano — foto 13'},
+  {src:BASE+'63aaa56a-76fb-41b0-9632-169869fceb87.avif',    alt:'Casa Azul Manzano — foto 14'},
+  {src:BASE+'66bd2c82-7d9a-4df7-ac0e-94db89c40d88.avif',    alt:'Casa Azul Manzano — foto 15'},
+  {src:BASE+'68c1b838-662b-47b4-a5bf-9111ba53729a.avif',    alt:'Casa Azul Manzano — foto 16'},
+  {src:BASE+'71bd5d95-cbac-48cf-90d5-718098818ab7.avif',    alt:'Casa Azul Manzano — foto 17'},
+  {src:BASE+'7e6bf155-42b4-4338-91a1-533ca8ef81bc.avif',    alt:'Casa Azul Manzano — foto 18'},
+  {src:BASE+'870147fc-111e-4895-b70e-d93f2e0fdb7e.avif',    alt:'Casa Azul Manzano — foto 19'},
+  {src:BASE+'87271860-b8f9-4ef3-9549-bb9f5b358314.avif',    alt:'Casa Azul Manzano — foto 20'},
+  {src:BASE+'8d242958-3fca-4793-b1ea-97e62de6bf58.avif',    alt:'Casa Azul Manzano — foto 21'},
+  {src:BASE+'948c85e5-f770-41a2-8540-299a9ef1d38f.avif',    alt:'Casa Azul Manzano — foto 22'},
+  {src:BASE+'951d8f81-da0b-4667-a35c-9c708d3e4b5c.avif',    alt:'Casa Azul Manzano — foto 23'},
+  {src:BASE+'95d97a07-9448-4ddc-9dc5-388acab2c440.webp',    alt:'Casa Azul Manzano — foto 24'},
+  {src:BASE+'a47ae588-468b-4361-b31a-8c37051c106a.avif',    alt:'Casa Azul Manzano — foto 25'},
+  {src:BASE+'a9be7e89-7cae-48c4-ae4b-6d05165e7bab.avif',    alt:'Casa Azul Manzano — foto 26'},
+  {src:BASE+'a9ca73ca-ae93-43b5-95b8-f594bdf1969f.avif',    alt:'Casa Azul Manzano — foto 27'},
+  {src:BASE+'c5681ccb-1450-4874-8ba7-9cae17d45965.avif',    alt:'Casa Azul Manzano — foto 28'},
+  {src:BASE+'db42d226-a0c3-45af-ae7d-656eb17f2368.avif',    alt:'Casa Azul Manzano — foto 29'},
+  {src:BASE+'e2586324-211b-4a1e-a682-3f20b90b4590.avif',    alt:'Casa Azul Manzano — foto 30'},
+  {src:BASE+'eccfae42-c34c-4774-a7b0-e0bffaa9cf96.jpg',     alt:'Casa Azul Manzano — foto 31'},
+  {src:BASE+'f8efcb63-f8dd-458d-904b-f1ff6e0b1c72.avif',    alt:'Casa Azul Manzano — foto 32'},
+  {src:BASE+'f96387bb-530d-4822-acb6-19eac06d1d28.avif',    alt:'Casa Azul Manzano — foto 33'},
+];
+
+const AMENITIES = [
+  ['🛁','Hot tub eléctrico privado 24/7'],['🍳','Cocina completamente equipada'],['🧊','Refrigerador'],
+  ['🅿️','Estacionamiento gratuito'],['📶','WiFi'],['🔥','Calefacción'],
+  ['🌿','Rodeada de bosque nativo'],['🌊','A 15 min de Puertecillo'],['🔑','Auto check-in'],
+];
+
+function busyDates(id,y,m){const s=new Set();const d=new Date(y,m,0).getDate();let seed=id*31+m*13;const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff};for(let i=1;i<=d;i++){const dow=new Date(y,m-1,i).getDay();if((dow===0||dow===6)&&rnd()>0.35)s.add(i);else if(rnd()>0.78)s.add(i)}return s}
+
+const GalleryModal = ({photos,start,onClose}) => {
+  const [idx,setIdx] = useState(start);
+  useEffect(()=>{
+    document.body.style.overflow='hidden';
+    const fn=e=>{if(e.key==='ArrowRight')setIdx(i=>(i+1)%photos.length);if(e.key==='ArrowLeft')setIdx(i=>(i-1+photos.length)%photos.length);if(e.key==='Escape')onClose()};
+    window.addEventListener('keydown',fn);
+    return()=>{document.body.style.overflow='';window.removeEventListener('keydown',fn)};
+  },[]);
+  return (
+    <div style={{position:'fixed',inset:0,zIndex:1000,background:'#000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+      <button onClick={onClose} style={{position:'absolute',top:'1.2rem',right:'1.5rem',background:'none',border:'none',color:'rgba(237,245,242,0.6)',fontSize:'1.5rem',cursor:'pointer'}}>✕</button>
+      <div style={{fontSize:'0.68rem',letterSpacing:'0.2em',color:'rgba(237,245,242,0.4)',marginBottom:'1rem'}}>{idx+1} / {photos.length}</div>
+      <div style={{position:'relative',width:'100%',maxWidth:'1100px',display:'flex',alignItems:'center',justifyContent:'center',padding:'0 3rem'}}>
+        <button onClick={()=>setIdx(i=>(i-1+photos.length)%photos.length)} style={{position:'absolute',left:0,background:'rgba(255,255,255,0.08)',border:'none',color:'#EDF5F2',fontSize:'1.4rem',width:'2.8rem',height:'2.8rem',cursor:'pointer'}}>‹</button>
+        <img src={photos[idx].src} alt={photos[idx].alt} style={{width:'100%',height:'85vh',objectFit:'contain',display:'block'}}/>
+        <button onClick={()=>setIdx(i=>(i+1)%photos.length)} style={{position:'absolute',right:0,background:'rgba(255,255,255,0.08)',border:'none',color:'#EDF5F2',fontSize:'1.4rem',width:'2.8rem',height:'2.8rem',cursor:'pointer'}}>›</button>
+      </div>
+      <div style={{fontSize:'0.75rem',fontStyle:'italic',color:'rgba(237,245,242,0.4)',marginTop:'1rem'}}>{photos[idx].alt}</div>
+      <div style={{display:'flex',gap:'0.5rem',marginTop:'1.2rem',overflowX:'auto',maxWidth:'90vw',padding:'0.3rem 0'}}>
+        {photos.map((p,i)=>(
+          <div key={i} onClick={()=>setIdx(i)} style={{width:'60px',height:'44px',flexShrink:0,cursor:'pointer',border:i===idx?'2px solid #C8A86B':'2px solid transparent',overflow:'hidden',transition:'border 0.2s'}}>
+            <img src={p.src} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const MONTHS_ES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const Calendar = ({propId}) => {
+  const today=new Date();
+  const months=Array.from({length:3},(_,i)=>{const d=new Date(today.getFullYear(),today.getMonth()+i,1);return{y:d.getFullYear(),m:d.getMonth()+1,label:`${MONTHS_ES[d.getMonth()]} ${d.getFullYear()}`};});
+  return (
+    <div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'2rem'}}>
+        {months.map(({y,m,label})=>{
+          const busy=busyDates(propId,y,m);
+          const fdow=(new Date(y,m-1,1).getDay()+6)%7;
+          const total=new Date(y,m,0).getDate();
+          const cells=[...Array(fdow).fill(null),...Array.from({length:total},(_,i)=>i+1)];
+          return (
+            <div key={m}>
+              <div style={{fontFamily:'Bebas Neue,sans-serif',letterSpacing:'0.1em',fontSize:'1rem',color:'#C8A86B',marginBottom:'0.8rem'}}>{label}</div>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:'3px',fontSize:'0.7rem'}}>
+                {['L','M','X','J','V','S','D'].map(d=><div key={d} style={{textAlign:'center',color:'rgba(237,245,242,0.3)',paddingBottom:'4px'}}>{d}</div>)}
+                {cells.map((d,i)=>{
+                  if(!d)return<div key={`e${i}`}/>;
+                  const isPast=new Date(y,m-1,d)<today;
+                  const isToday=y===today.getFullYear()&&m===(today.getMonth()+1)&&d===today.getDate();
+                  const isBusy=busy.has(d);
+                  return<div key={d} style={{textAlign:'center',padding:'5px 2px',borderRadius:'4px',background:isToday?'#C8A86B':isBusy?'rgba(212,94,40,0.15)':isPast?'transparent':'rgba(37,211,102,0.08)',color:isToday?'#0A1C27':isPast?'rgba(237,245,242,0.15)':isBusy?'rgba(212,94,40,0.7)':'rgba(74,222,128,0.9)',fontWeight:isToday?700:400,textDecoration:isPast?'line-through':'none'}}>{d}</div>;
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{display:'flex',gap:'2rem',marginTop:'1.2rem'}}>
+        <span style={{fontSize:'0.7rem',color:'rgba(74,222,128,0.9)'}}>● Disponible</span>
+        <span style={{fontSize:'0.7rem',color:'rgba(212,94,40,0.7)'}}>● Ocupado</span>
+        <span style={{fontSize:'0.7rem',color:'#C8A86B'}}>■ Hoy</span>
+      </div>
+    </div>
+  );
+};
+
+const App = () => {
+  const [gallery,setGallery] = useState(null);
+  const [scrolled,setScrolled] = useState(false);
+  useEffect(()=>{const fn=()=>setScrolled(window.scrollY>80);window.addEventListener('scroll',fn);return()=>window.removeEventListener('scroll',fn)},[]);
+  return (
+    <div className="fade-in">
+      <nav style={{position:'fixed',top:0,left:0,right:0,zIndex:200,padding:'0.9rem 5vw',display:'flex',alignItems:'center',justifyContent:'space-between',background:scrolled?'rgba(10,28,39,0.95)':'transparent',backdropFilter:scrolled?'blur(14px)':'none',borderBottom:scrolled?'1px solid rgba(200,168,107,0.12)':'1px solid transparent',transition:'all 0.4s'}}>
+        <a href="index.html"><img src="staypuerte-logo.png" alt="StayPuerte" style={{height:'38px',width:'auto',objectFit:'contain'}}/></a>
+        <div style={{display:'flex',gap:'0.8rem',alignItems:'center'}}>
+          <a href="index.html#propiedades" style={{fontSize:'0.7rem',letterSpacing:'0.18em',textTransform:'uppercase',color:'rgba(237,245,242,0.6)',textDecoration:'none',display:'flex',alignItems:'center',gap:'0.3rem'}} onMouseEnter={e=>e.currentTarget.style.color='#C8A86B'} onMouseLeave={e=>e.currentTarget.style.color='rgba(237,245,242,0.6)'}>← Propiedades</a>
+          <a href="#disponibilidad" style={{fontSize:'0.7rem',letterSpacing:'0.18em',textTransform:'uppercase',color:'rgba(237,245,242,0.6)',textDecoration:'none'}} onMouseEnter={e=>e.target.style.color='#C8A86B'} onMouseLeave={e=>e.target.style.color='rgba(237,245,242,0.6)'}>Disponibilidad</a>
+          <a href="https://www.airbnb.cl/rooms/1074617627027380183" target="_blank" rel="noopener" style={{background:'#D45E28',color:'#EDF5F2',padding:'0.55rem 1.4rem',fontFamily:'DM Sans,sans-serif',fontSize:'0.72rem',letterSpacing:'0.18em',textTransform:'uppercase',textDecoration:'none',transition:'background 0.3s'}} onMouseEnter={e=>e.currentTarget.style.background='#b84d20'} onMouseLeave={e=>e.currentTarget.style.background='#D45E28'}>Reservar en Airbnb</a>
+        </div>
+      </nav>
+
+      <div style={{paddingTop:'60px'}}>
+        <div className="photo-grid" style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr',gridTemplateRows:'260px 260px',gap:'3px',maxHeight:'523px',overflow:'hidden'}}>
+          <div onClick={()=>setGallery(0)} style={{gridRow:'1/3',cursor:'zoom-in',overflow:'hidden'}}>
+            <img src={PHOTOS[0].src} alt={PHOTOS[0].alt} style={{width:'100%',height:'100%',objectFit:'cover',transition:'transform 0.5s'}} onMouseEnter={e=>e.target.style.transform='scale(1.03)'} onMouseLeave={e=>e.target.style.transform='scale(1)'}/>
+          </div>
+          {PHOTOS.slice(1,5).map((p,i)=>(
+            <div key={i} className="thumb" onClick={()=>setGallery(i+1)} style={{cursor:'zoom-in',overflow:'hidden',position:'relative'}}>
+              <img src={p.src} alt={p.alt} style={{width:'100%',height:'100%',objectFit:'cover',transition:'transform 0.5s'}} onMouseEnter={e=>e.target.style.transform='scale(1.05)'} onMouseLeave={e=>e.target.style.transform='scale(1)'}/>
+              {i===3&&<div style={{position:'absolute',inset:0,background:'rgba(10,28,39,0.65)',display:'flex',alignItems:'center',justifyContent:'center'}}><span style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'1.3rem',letterSpacing:'0.1em',color:'#EDF5F2'}}>+{PHOTOS.length-5} fotos</span></div>}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid-layout" style={{maxWidth:'1100px',margin:'0 auto',padding:'3rem 5vw',display:'grid',gridTemplateColumns:'1fr 380px',gap:'4rem',alignItems:'start'}}>
+        <div>
+          <div style={{marginBottom:'2rem',paddingBottom:'2rem',borderBottom:'1px solid rgba(200,168,107,0.12)'}}>
+            <div style={{display:'flex',gap:'0.8rem',marginBottom:'0.8rem',flexWrap:'wrap',alignItems:'center'}}>
+              <span style={{background:'rgba(200,168,107,0.1)',border:'1px solid rgba(200,168,107,0.3)',padding:'0.2rem 0.7rem',fontSize:'0.6rem',letterSpacing:'0.22em',textTransform:'uppercase',color:'#C8A86B'}}>Casa</span>
+              <span style={{fontSize:'0.7rem',color:'rgba(237,245,242,0.4)',letterSpacing:'0.1em'}}>Puertecillo · VI Región · Chile</span>
+              <span style={{marginLeft:'auto',color:'#C8A86B',fontSize:'0.82rem'}}>★ 4.78 · <span style={{color:'rgba(237,245,242,0.45)',textDecoration:'underline',cursor:'pointer'}}>12 reseñas</span></span>
+            </div>
+            <h1 style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'clamp(2.4rem,5vw,3.8rem)',lineHeight:0.93,letterSpacing:'0.03em',color:'#EDF5F2',marginBottom:'0.6rem'}}>
+              Casa Azul<br/><span style={{color:'#C8A86B'}}>Manzano</span>
+            </h1>
+            <p style={{fontSize:'0.88rem',color:'rgba(237,245,242,0.5)',letterSpacing:'0.08em'}}>Cerca de Puertecillo · VI Región · Chile</p>
+          </div>
+
+          <div style={{display:'flex',gap:'2.5rem',marginBottom:'2.5rem',paddingBottom:'2rem',borderBottom:'1px solid rgba(200,168,107,0.12)',flexWrap:'wrap'}}>
+            {[['6','Huéspedes'],['3','Dormitorios'],['3','Camas'],['2','Baños']].map(([n,l])=>(
+              <div key={l} style={{textAlign:'center'}}>
+                <div style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'2.2rem',color:'#C8A86B',lineHeight:1}}>{n}</div>
+                <div style={{fontSize:'0.65rem',letterSpacing:'0.2em',textTransform:'uppercase',color:'rgba(237,245,242,0.4)',marginTop:'2px'}}>{l}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{marginBottom:'2.5rem',paddingBottom:'2rem',borderBottom:'1px solid rgba(200,168,107,0.12)'}}>
+            {[
+              ['🛁','Hot tub eléctrico privado 24/7','Disponible todo el año, a cualquier hora. Perfecto después de un día de surf o senderismo.'],
+              ['🌿','Rodeada de bosque nativo','Casa inspirada en el mar, integrada en el paisaje natural. Una experiencia única entre naturaleza y confort.'],
+              ['🔑','Auto check-in','Llega a tu hora sin coordinación previa. Acceso autónomo con caja de seguridad.'],
+            ].map(([icon,title,desc])=>(
+              <div key={title} style={{display:'flex',gap:'1.2rem',alignItems:'flex-start',marginBottom:'1.4rem'}}>
+                <span style={{fontSize:'1.4rem',marginTop:'1px'}}>{icon}</span>
+                <div>
+                  <div style={{fontSize:'0.88rem',fontWeight:400,color:'#EDF5F2',marginBottom:'0.2rem'}}>{title}</div>
+                  <div style={{fontSize:'0.82rem',fontStyle:'italic',color:'rgba(237,245,242,0.5)',lineHeight:1.6}}>{desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{marginBottom:'2.5rem',paddingBottom:'2rem',borderBottom:'1px solid rgba(200,168,107,0.12)'}}>
+            <h2 style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'1.5rem',letterSpacing:'0.06em',color:'#EDF5F2',marginBottom:'1.2rem'}}>Sobre la propiedad</h2>
+            <p style={{fontSize:'0.9rem',lineHeight:1.85,color:'rgba(237,245,242,0.65)',fontStyle:'italic',marginBottom:'1rem'}}>Casa inspirada en el mar, rodeada de bosque nativo. Diseño que integra los colores y texturas del océano en cada rincón — un refugio pensado para desconectarse del ruido de la ciudad.</p>
+            <p style={{fontSize:'0.9rem',lineHeight:1.85,color:'rgba(237,245,242,0.65)',fontStyle:'italic',marginBottom:'1rem'}}>El hot tub eléctrico privado está disponible las 24 horas del día, todos los días del año. Ideal para terminar el día bajo las estrellas después de unas olas en Puertecillo o Matanzas.</p>
+            <p style={{fontSize:'0.9rem',lineHeight:1.85,color:'rgba(237,245,242,0.65)',fontStyle:'italic'}}>A 15 min de Puertecillo y 30 min de Matanzas. Capacidad para 6 personas en 3 dormitorios.</p>
+          </div>
+
+          <div style={{marginBottom:'2.5rem',paddingBottom:'2rem',borderBottom:'1px solid rgba(200,168,107,0.12)'}}>
+            <h2 style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'1.5rem',letterSpacing:'0.06em',color:'#EDF5F2',marginBottom:'1.5rem'}}>Lo que ofrece</h2>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.8rem'}}>
+              {AMENITIES.map(([icon,label])=>(
+                <div key={label} style={{display:'flex',alignItems:'center',gap:'0.8rem',padding:'0.5rem 0'}}>
+                  <span style={{fontSize:'1.1rem'}}>{icon}</span>
+                  <span style={{fontSize:'0.85rem',color:'rgba(237,245,242,0.65)'}}>{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{marginBottom:'2rem',paddingBottom:'2rem',borderBottom:'1px solid rgba(200,168,107,0.12)'}}>
+            <h2 style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'1.5rem',letterSpacing:'0.06em',color:'#EDF5F2',marginBottom:'0.8rem'}}>Check-in / Check-out</h2>
+            <div style={{display:'flex',gap:'3rem',flexWrap:'wrap'}}>
+              <div><div style={{fontSize:'0.65rem',letterSpacing:'0.2em',textTransform:'uppercase',color:'rgba(237,245,242,0.4)',marginBottom:'4px'}}>Check-in</div><div style={{fontSize:'1rem',color:'#C8A86B'}}>Desde las 15:00</div></div>
+              <div><div style={{fontSize:'0.65rem',letterSpacing:'0.2em',textTransform:'uppercase',color:'rgba(237,245,242,0.4)',marginBottom:'4px'}}>Check-out</div><div style={{fontSize:'1rem',color:'#C8A86B'}}>Antes de las 12:00</div></div>
+              <div><div style={{fontSize:'0.65rem',letterSpacing:'0.2em',textTransform:'uppercase',color:'rgba(237,245,242,0.4)',marginBottom:'4px'}}>Mascotas</div><div style={{fontSize:'1rem',color:'rgba(237,245,242,0.6)'}}>Consultar</div></div>
+            </div>
+          </div>
+
+          <div id="disponibilidad" style={{marginBottom:'2.5rem'}}>
+            <h2 style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'1.5rem',letterSpacing:'0.06em',color:'#EDF5F2',marginBottom:'0.4rem'}}>Disponibilidad</h2>
+            <p style={{fontSize:'0.78rem',fontStyle:'italic',color:'rgba(237,245,242,0.4)',marginBottom:'0.6rem'}}>Disponibilidad orientativa — las fechas reales se confirman en Airbnb al momento de reservar.</p>
+            <p style={{fontSize:'0.72rem',color:'rgba(200,168,107,0.5)',marginBottom:'1.5rem',letterSpacing:'0.05em'}}>⚠ Este calendario es ilustrativo y no refleja la disponibilidad real de Airbnb.</p>
+            <Calendar propId={5}/>
+          </div>
+        </div>
+
+        <div className="sticky-card" style={{position:'sticky',top:'80px'}}>
+          <div style={{background:'#1B3D52',border:'1px solid rgba(200,168,107,0.18)',padding:'2rem'}}>
+            <div style={{display:'flex',alignItems:'baseline',gap:'0.5rem',marginBottom:'0.4rem'}}>
+              <span style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'2.2rem',color:'#EDF5F2'}}>$130.000</span>
+              <span style={{fontSize:'0.75rem',color:'rgba(237,245,242,0.45)',letterSpacing:'0.1em'}}>CLP / noche</span>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:'0.5rem',marginBottom:'1.5rem'}}>
+              <span style={{color:'#C8A86B',fontSize:'0.88rem'}}>★ 4.78</span>
+              <span style={{fontSize:'0.75rem',color:'rgba(237,245,242,0.4)'}}>12 reseñas</span>
+            </div>
+            <a href="https://www.airbnb.cl/rooms/1074617627027380183" target="_blank" rel="noopener" style={{display:'block',width:'100%',background:'#D45E28',color:'#EDF5F2',padding:'1rem',fontFamily:'DM Sans,sans-serif',fontSize:'0.8rem',letterSpacing:'0.18em',textTransform:'uppercase',textDecoration:'none',textAlign:'center',transition:'background 0.3s',marginBottom:'0.8rem'}} onMouseEnter={e=>e.currentTarget.style.background='#b84d20'} onMouseLeave={e=>e.currentTarget.style.background='#D45E28'}>Reservar en Airbnb</a>
+            <a href="https://wa.me/56992908598?text=Hola%2C+me+interesa+la+Casa+Azul+Manzano+en+StayPuerte" target="_blank" rel="noopener" style={{display:'block',width:'100%',background:'transparent',border:'1px solid #25D366',color:'#25D366',padding:'0.9rem',fontFamily:'DM Sans,sans-serif',fontSize:'0.8rem',letterSpacing:'0.18em',textTransform:'uppercase',textDecoration:'none',textAlign:'center',transition:'all 0.3s'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(37,211,102,0.08)'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>💬 Consultar por WhatsApp</a>
+            <div style={{borderTop:'1px solid rgba(200,168,107,0.12)',marginTop:'1.5rem',paddingTop:'1.5rem'}}>
+              {[['Precio base','$130.000 / noche'],['Limpieza','$20.000'],['Cargo servicio','$15.000']].map(([k,v])=>(
+                <div key={k} style={{display:'flex',justifyContent:'space-between',marginBottom:'0.6rem',fontSize:'0.8rem'}}>
+                  <span style={{color:'rgba(237,245,242,0.5)'}}>{k}</span><span style={{color:'rgba(237,245,242,0.75)'}}>{v}</span>
+                </div>
+              ))}
+              <div style={{display:'flex',justifyContent:'space-between',marginTop:'0.8rem',paddingTop:'0.8rem',borderTop:'1px solid rgba(200,168,107,0.1)',fontSize:'0.85rem'}}>
+                <span style={{color:'#EDF5F2'}}>Total estimado</span>
+                <span style={{color:'#C8A86B',fontFamily:'Bebas Neue,sans-serif',fontSize:'1.1rem'}}>$165.000</span>
+              </div>
+              <p style={{fontSize:'0.65rem',color:'rgba(237,245,242,0.28)',marginTop:'0.5rem',fontStyle:'italic'}}>* Estimado para 1 noche. El total real se calcula en Airbnb.</p>
+            </div>
+            <div style={{borderTop:'1px solid rgba(200,168,107,0.12)',marginTop:'1.5rem',paddingTop:'1.5rem',display:'flex',gap:'0.8rem',alignItems:'center'}}>
+              <img src="staypuerte-logo.png" alt="StayPuerte" style={{height:'36px',width:'auto'}}/>
+              <div>
+                <div style={{fontSize:'0.78rem',color:'#EDF5F2',fontWeight:400}}>Gestionado por StayPuerte</div>
+                <div style={{fontSize:'0.68rem',color:'rgba(237,245,242,0.4)',fontStyle:'italic'}}>Tasa de respuesta 100% · Responde en 1 hora</div>
+              </div>
+            </div>
+          </div>
+          <div style={{marginTop:'1rem',border:'1px solid rgba(200,168,107,0.12)',overflow:'hidden'}}>
+            <iframe src="https://maps.google.com/maps?q=Puertecillo%2C+Chile&output=embed&hl=es&z=12" style={{width:'100%',height:'200px',border:'none',display:'block',filter:'saturate(0.6) brightness(0.8)'}} loading="lazy" title="Ubicación Casa Azul Manzano"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <footer style={{background:'#050f16',borderTop:'1px solid rgba(200,168,107,0.1)',padding:'2rem 5vw',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'1rem'}}>
+        <a href="index.html"><img src="staypuerte-logo.png" alt="StayPuerte" style={{height:'36px',width:'auto'}}/></a>
+        <span style={{fontSize:'0.68rem',color:'rgba(237,245,242,0.25)'}}>© 2026 StayPuerte · Puertecillo, Chile</span>
+      </footer>
+
+      {gallery!==null&&<GalleryModal photos={PHOTOS} start={gallery} onClose={()=>setGallery(null)}/>}
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

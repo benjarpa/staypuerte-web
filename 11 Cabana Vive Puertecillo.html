@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cabaña Vive Puertecillo — StayPuerte</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--ocean:#0A1C27;--blue:#1B3D52;--foam:#EDF5F2;--sand:#C8A86B;--sunset:#D45E28;--green:#25D366}
+    html{scroll-behavior:smooth}
+    body{background:var(--ocean);color:var(--foam);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--ocean)}::-webkit-scrollbar-thumb{background:var(--sand);border-radius:2px}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .fade-in{animation:fadeIn 0.5s ease forwards}
+    @media(max-width:768px){.grid-layout{grid-template-columns:1fr!important}.sticky-card{position:static!important;top:auto!important}.photo-grid{grid-template-columns:1fr!important;grid-template-rows:300px!important}.thumb{display:none!important}}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const BASE = 'Propiedades%20Fotos/11%20Cabana%20Vive%20Puertecillo/';
+const PHOTOS = [
+  {src:BASE+'01.avif',                                       alt:'Cabaña Vive Puertecillo — vista exterior'},
+  {src:BASE+'0065eeaa-c702-41e7-b1b2-88d65dac59e2.avif',    alt:'Cabaña Vive Puertecillo — foto 2'},
+  {src:BASE+'01d3e753-61c4-4806-82de-34683ac8b123.jpeg',    alt:'Cabaña Vive Puertecillo — foto 3'},
+  {src:BASE+'074202b2-d14d-44b4-8a18-5a160933b5ac.avif',    alt:'Cabaña Vive Puertecillo — foto 4'},
+  {src:BASE+'0cd76fc2-19a8-49a6-8cd5-e8f2a8f01cf6.jpeg',    alt:'Cabaña Vive Puertecillo — foto 5'},
+  {src:BASE+'10711f2c-781e-474f-9ece-9b3e045bde57.jpeg',    alt:'Cabaña Vive Puertecillo — foto 6'},
+  {src:BASE+'115678f9-3e25-4f37-832d-5666159313e6.avif',    alt:'Cabaña Vive Puertecillo — foto 7'},
+  {src:BASE+'1fb22c5b-7865-44d0-8e89-3fb2311f0934.avif',    alt:'Cabaña Vive Puertecillo — foto 8'},
+  {src:BASE+'201e8c61-0499-4db2-95d6-f346546e9019.avif',    alt:'Cabaña Vive Puertecillo — foto 9'},
+  {src:BASE+'2308e079-0520-463e-88c9-235c65cb5604.jpeg',    alt:'Cabaña Vive Puertecillo — foto 10'},
+  {src:BASE+'2a1e347e-3143-46ae-9670-f43010129c54.avif',    alt:'Cabaña Vive Puertecillo — foto 11'},
+  {src:BASE+'2e9298b1-428e-4315-ac20-b7bf9c29e29b.jpeg',    alt:'Cabaña Vive Puertecillo — foto 12'},
+  {src:BASE+'32d7243f-9f3c-489e-b9c6-2e7960d93c9e.avif',    alt:'Cabaña Vive Puertecillo — foto 13'},
+  {src:BASE+'32da8892-5acf-4f60-9913-ce015a378743.avif',    alt:'Cabaña Vive Puertecillo — foto 14'},
+  {src:BASE+'3e408bbb-060e-4ebc-a812-1a0ac96e5e39.avif',    alt:'Cabaña Vive Puertecillo — foto 15'},
+  {src:BASE+'47c6125a-f31e-4ce4-af14-fbe38eba1655.avif',    alt:'Cabaña Vive Puertecillo — foto 16'},
+  {src:BASE+'4cb36fe2-f8e2-4148-b574-600aa3fb8bec.avif',    alt:'Cabaña Vive Puertecillo — foto 17'},
+  {src:BASE+'4ecfac23-2adb-42d9-aff4-a504ae8f1b47.avif',    alt:'Cabaña Vive Puertecillo — foto 18'},
+  {src:BASE+'5d0d185f-39b7-44f6-932c-198dbb57d55b.avif',    alt:'Cabaña Vive Puertecillo — foto 19'},
+  {src:BASE+'68111310-6245-411e-bd6f-1c40098bc6bc.avif',    alt:'Cabaña Vive Puertecillo — foto 20'},
+  {src:BASE+'7c1fcc1c-2677-47b1-acf8-dfa4c51c0965.avif',    alt:'Cabaña Vive Puertecillo — foto 21'},
+  {src:BASE+'80dc57ef-57e2-4d17-b370-ebefdeb729a9.avif',    alt:'Cabaña Vive Puertecillo — foto 22'},
+  {src:BASE+'ac7bb45b-4a32-42a5-9ecc-40cf0b30d08c.avif',    alt:'Cabaña Vive Puertecillo — foto 23'},
+  {src:BASE+'b65f098c-7ec3-485f-b9d1-21e01e2ea03d.jpeg',    alt:'Cabaña Vive Puertecillo — foto 24'},
+  {src:BASE+'b677cc25-e06f-47dd-beba-9d8a3e50c5ce.avif',    alt:'Cabaña Vive Puertecillo — foto 25'},
+  {src:BASE+'b7de9aea-67f8-47a0-9759-386a92411cb8.avif',    alt:'Cabaña Vive Puertecillo — foto 26'},
+  {src:BASE+'c921d861-d88f-46ce-bd06-cb12da490893.avif',    alt:'Cabaña Vive Puertecillo — foto 27'},
+  {src:BASE+'c9cb7179-dec1-40b4-adb4-afe1c168f297.webp',    alt:'Cabaña Vive Puertecillo — foto 28'},
+  {src:BASE+'d4303f22-c91b-43d9-9c11-007688563ffb.avif',    alt:'Cabaña Vive Puertecillo — foto 29'},
+  {src:BASE+'d463cad4-ba6a-4c43-ab86-43cf9c88a856.jpeg',    alt:'Cabaña Vive Puertecillo — foto 30'},
+  {src:BASE+'d6f9f2c1-9660-436d-a4bb-906cf18de36e.avif',    alt:'Cabaña Vive Puertecillo — foto 31'},
+  {src:BASE+'d992fe1d-25f8-4396-8cff-f9b4446f2620.jpeg',    alt:'Cabaña Vive Puertecillo — foto 32'},
+  {src:BASE+'da3a8bae-29cc-4db1-b555-d5b5b6578bf1.avif',    alt:'Cabaña Vive Puertecillo — foto 33'},
+  {src:BASE+'dad2bf8a-c0d3-4eb6-a4af-23cf5a79f8da.jpeg',    alt:'Cabaña Vive Puertecillo — foto 34'},
+  {src:BASE+'dc79cf14-ad22-466b-a562-e3921d978683.avif',    alt:'Cabaña Vive Puertecillo — foto 35'},
+  {src:BASE+'fa7e6058-3cd8-4da3-a2c3-898548c51cf0.avif',    alt:'Cabaña Vive Puertecillo — foto 36'},
+  {src:BASE+'fb0aeebf-49fd-4629-9c24-a81f02914053.avif',    alt:'Cabaña Vive Puertecillo — foto 37'},
+];
+
+const AMENITIES = [
+  ['🔥','Estufa a leña'],['🍖','Terraza con parrilla'],['🐾','Se permiten mascotas'],
+  ['🍳','Cocina equipada'],['🛏','Cama doble + altillo'],['🅿️','Estacionamiento'],
+  ['📶','WiFi'],['🌿','Entorno natural'],['🔑','Auto check-in'],
+];
+
+function busyDates(id,y,m){const s=new Set();const d=new Date(y,m,0).getDate();let seed=id*31+m*13;const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff};for(let i=1;i<=d;i++){const dow=new Date(y,m-1,i).getDay();if((dow===0||dow===6)&&rnd()>0.35)s.add(i);else if(rnd()>0.78)s.add(i)}return s}
+
+const GalleryModal = ({photos,start,onClose}) => {
+  const [idx,setIdx] = useState(start);
+  useEffect(()=>{
+    document.body.style.overflow='hidden';
+    const fn=e=>{if(e.key==='ArrowRight')setIdx(i=>(i+1)%photos.length);if(e.key==='ArrowLeft')setIdx(i=>(i-1+photos.length)%photos.length);if(e.key==='Escape')onClose()};
+    window.addEventListener('keydown',fn);
+    return()=>{document.body.style.overflow='';window.removeEventListener('keydown',fn)};
+  },[]);
+  return (
+    <div style={{position:'fixed',inset:0,zIndex:1000,background:'#000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+      <button onClick={onClose} style={{position:'absolute',top:'1.2rem',right:'1.5rem',background:'none',border:'none',color:'rgba(237,245,242,0.6)',fontSize:'1.5rem',cursor:'pointer'}}>✕</button>
+      <div style={{fontSize:'0.68rem',letterSpacing:'0.2em',color:'rgba(237,245,242,0.4)',marginBottom:'1rem'}}>{idx+1} / {photos.length}</div>
+      <div style={{position:'relative',width:'100%',maxWidth:'1100px',display:'flex',alignItems:'center',justifyContent:'center',padding:'0 3rem'}}>
+        <button onClick={()=>setIdx(i=>(i-1+photos.length)%photos.length)} style={{position:'absolute',left:0,background:'rgba(255,255,255,0.08)',border:'none',color:'#EDF5F2',fontSize:'1.4rem',width:'2.8rem',height:'2.8rem',cursor:'pointer'}}>‹</button>
+        <img src={photos[idx].src} alt={photos[idx].alt} style={{width:'100%',height:'85vh',objectFit:'contain',display:'block'}}/>
+        <button onClick={()=>setIdx(i=>(i+1)%photos.length)} style={{position:'absolute',right:0,background:'rgba(255,255,255,0.08)',border:'none',color:'#EDF5F2',fontSize:'1.4rem',width:'2.8rem',height:'2.8rem',cursor:'pointer'}}>›</button>
+      </div>
+      <div style={{fontSize:'0.75rem',fontStyle:'italic',color:'rgba(237,245,242,0.4)',marginTop:'1rem'}}>{photos[idx].alt}</div>
+      <div style={{display:'flex',gap:'0.5rem',marginTop:'1.2rem',overflowX:'auto',maxWidth:'90vw',padding:'0.3rem 0'}}>
+        {photos.map((p,i)=>(
+          <div key={i} onClick={()=>setIdx(i)} style={{width:'60px',height:'44px',flexShrink:0,cursor:'pointer',border:i===idx?'2px solid #C8A86B':'2px solid transparent',overflow:'hidden',transition:'border 0.2s'}}>
+            <img src={p.src} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const MONTHS_ES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const Calendar = ({propId}) => {
+  const today=new Date();
+  const months=Array.from({length:3},(_,i)=>{const d=new Date(today.getFullYear(),today.getMonth()+i,1);return{y:d.getFullYear(),m:d.getMonth()+1,label:`${MONTHS_ES[d.getMonth()]} ${d.getFullYear()}`};});
+  return (
+    <div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'2rem'}}>
+        {months.map(({y,m,label})=>{
+          const busy=busyDates(propId,y,m);
+          const fdow=(new Date(y,m-1,1).getDay()+6)%7;
+          const total=new Date(y,m,0).getDate();
+          const cells=[...Array(fdow).fill(null),...Array.from({length:total},(_,i)=>i+1)];
+          return (
+            <div key={m}>
+              <div style={{fontFamily:'Bebas Neue,sans-serif',letterSpacing:'0.1em',fontSize:'1rem',color:'#C8A86B',marginBottom:'0.8rem'}}>{label}</div>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:'3px',fontSize:'0.7rem'}}>
+                {['L','M','X','J','V','S','D'].map(d=><div key={d} style={{textAlign:'center',color:'rgba(237,245,242,0.3)',paddingBottom:'4px'}}>{d}</div>)}
+                {cells.map((d,i)=>{
+                  if(!d)return<div key={`e${i}`}/>;
+                  const isPast=new Date(y,m-1,d)<today;
+                  const isToday=y===today.getFullYear()&&m===(today.getMonth()+1)&&d===today.getDate();
+                  const isBusy=busy.has(d);
+                  return<div key={d} style={{textAlign:'center',padding:'5px 2px',borderRadius:'4px',background:isToday?'#C8A86B':isBusy?'rgba(212,94,40,0.15)':isPast?'transparent':'rgba(37,211,102,0.08)',color:isToday?'#0A1C27':isPast?'rgba(237,245,242,0.15)':isBusy?'rgba(212,94,40,0.7)':'rgba(74,222,128,0.9)',fontWeight:isToday?700:400,textDecoration:isPast?'line-through':'none'}}>{d}</div>;
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{display:'flex',gap:'2rem',marginTop:'1.2rem'}}>
+        <span style={{fontSize:'0.7rem',color:'rgba(74,222,128,0.9)'}}>● Disponible</span>
+        <span style={{fontSize:'0.7rem',color:'rgba(212,94,40,0.7)'}}>● Ocupado</span>
+        <span style={{fontSize:'0.7rem',color:'#C8A86B'}}>■ Hoy</span>
+      </div>
+    </div>
+  );
+};
+
+const App = () => {
+  const [gallery,setGallery] = useState(null);
+  const [scrolled,setScrolled] = useState(false);
+  useEffect(()=>{const fn=()=>setScrolled(window.scrollY>80);window.addEventListener('scroll',fn);return()=>window.removeEventListener('scroll',fn)},[]);
+  return (
+    <div className="fade-in">
+      <nav style={{position:'fixed',top:0,left:0,right:0,zIndex:200,padding:'0.9rem 5vw',display:'flex',alignItems:'center',justifyContent:'space-between',background:scrolled?'rgba(10,28,39,0.95)':'transparent',backdropFilter:scrolled?'blur(14px)':'none',borderBottom:scrolled?'1px solid rgba(200,168,107,0.12)':'1px solid transparent',transition:'all 0.4s'}}>
+        <a href="index.html"><img src="staypuerte-logo.png" alt="StayPuerte" style={{height:'38px',width:'auto',objectFit:'contain'}}/></a>
+        <div style={{display:'flex',gap:'0.8rem',alignItems:'center'}}>
+          <a href="index.html#propiedades" style={{fontSize:'0.7rem',letterSpacing:'0.18em',textTransform:'uppercase',color:'rgba(237,245,242,0.6)',textDecoration:'none',display:'flex',alignItems:'center',gap:'0.3rem'}} onMouseEnter={e=>e.currentTarget.style.color='#C8A86B'} onMouseLeave={e=>e.currentTarget.style.color='rgba(237,245,242,0.6)'}>← Propiedades</a>
+          <a href="#disponibilidad" style={{fontSize:'0.7rem',letterSpacing:'0.18em',textTransform:'uppercase',color:'rgba(237,245,242,0.6)',textDecoration:'none'}} onMouseEnter={e=>e.target.style.color='#C8A86B'} onMouseLeave={e=>e.target.style.color='rgba(237,245,242,0.6)'}>Disponibilidad</a>
+          <a href="https://www.airbnb.cl/rooms/1222567922199700212" target="_blank" rel="noopener" style={{background:'#D45E28',color:'#EDF5F2',padding:'0.55rem 1.4rem',fontFamily:'DM Sans,sans-serif',fontSize:'0.72rem',letterSpacing:'0.18em',textTransform:'uppercase',textDecoration:'none',transition:'background 0.3s'}} onMouseEnter={e=>e.currentTarget.style.background='#b84d20'} onMouseLeave={e=>e.currentTarget.style.background='#D45E28'}>Reservar en Airbnb</a>
+        </div>
+      </nav>
+
+      <div style={{paddingTop:'60px'}}>
+        <div className="photo-grid" style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr',gridTemplateRows:'260px 260px',gap:'3px',maxHeight:'523px',overflow:'hidden'}}>
+          <div onClick={()=>setGallery(0)} style={{gridRow:'1/3',cursor:'zoom-in',overflow:'hidden'}}>
+            <img src={PHOTOS[0].src} alt={PHOTOS[0].alt} style={{width:'100%',height:'100%',objectFit:'cover',transition:'transform 0.5s'}} onMouseEnter={e=>e.target.style.transform='scale(1.03)'} onMouseLeave={e=>e.target.style.transform='scale(1)'}/>
+          </div>
+          {PHOTOS.slice(1,5).map((p,i)=>(
+            <div key={i} className="thumb" onClick={()=>setGallery(i+1)} style={{cursor:'zoom-in',overflow:'hidden',position:'relative'}}>
+              <img src={p.src} alt={p.alt} style={{width:'100%',height:'100%',objectFit:'cover',transition:'transform 0.5s'}} onMouseEnter={e=>e.target.style.transform='scale(1.05)'} onMouseLeave={e=>e.target.style.transform='scale(1)'}/>
+              {i===3&&<div style={{position:'absolute',inset:0,background:'rgba(10,28,39,0.65)',display:'flex',alignItems:'center',justifyContent:'center'}}><span style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'1.3rem',letterSpacing:'0.1em',color:'#EDF5F2'}}>+{PHOTOS.length-5} fotos</span></div>}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid-layout" style={{maxWidth:'1100px',margin:'0 auto',padding:'3rem 5vw',display:'grid',gridTemplateColumns:'1fr 380px',gap:'4rem',alignItems:'start'}}>
+        <div>
+          <div style={{marginBottom:'2rem',paddingBottom:'2rem',borderBottom:'1px solid rgba(200,168,107,0.12)'}}>
+            <div style={{display:'flex',gap:'0.8rem',marginBottom:'0.8rem',flexWrap:'wrap',alignItems:'center'}}>
+              <span style={{background:'rgba(200,168,107,0.1)',border:'1px solid rgba(200,168,107,0.3)',padding:'0.2rem 0.7rem',fontSize:'0.6rem',letterSpacing:'0.22em',textTransform:'uppercase',color:'#C8A86B'}}>Cabaña</span>
+              <span style={{fontSize:'0.7rem',color:'rgba(237,245,242,0.4)',letterSpacing:'0.1em'}}>Puertecillo · VI Región · Chile</span>
+              <span style={{marginLeft:'auto',color:'#C8A86B',fontSize:'0.82rem'}}>★ 4.90 · <span style={{color:'rgba(237,245,242,0.45)',textDecoration:'underline',cursor:'pointer'}}>15 reseñas</span></span>
+            </div>
+            <h1 style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'clamp(2.4rem,5vw,3.8rem)',lineHeight:0.93,letterSpacing:'0.03em',color:'#EDF5F2',marginBottom:'0.6rem'}}>
+              Cabaña Vive<br/><span style={{color:'#C8A86B'}}>Puertecillo</span>
+            </h1>
+            <p style={{fontSize:'0.88rem',color:'rgba(237,245,242,0.5)',letterSpacing:'0.08em'}}>Puertecillo · VI Región · Chile</p>
+          </div>
+
+          <div style={{display:'flex',gap:'2.5rem',marginBottom:'2.5rem',paddingBottom:'2rem',borderBottom:'1px solid rgba(200,168,107,0.12)',flexWrap:'wrap'}}>
+            {[['4','Huéspedes'],['1','Dormitorio'],['Doble+altillo','Camas'],['1','Baño']].map(([n,l])=>(
+              <div key={l} style={{textAlign:'center'}}>
+                <div style={{fontFamily:'Bebas Neue,sans-serif',fontSize: n.length>5 ? '1.2rem':'2.2rem',color:'#C8A86B',lineHeight:1}}>{n}</div>
+                <div style={{fontSize:'0.65rem',letterSpacing:'0.2em',textTransform:'uppercase',color:'rgba(237,245,242,0.4)',marginTop:'2px'}}>{l}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{marginBottom:'2.5rem',paddingBottom:'2rem',borderBottom:'1px solid rgba(200,168,107,0.12)'}}>
+            {[
+              ['🔥','Estufa a leña','Calienta la cabaña en minutos. El ambiente perfecto para las noches frías de la costa central.'],
+              ['🐾','Se permiten mascotas','Trae a tu perro sin problema. Espacio exterior con terraza y parrilla para todos.'],
+              ['🛏','Distribución inteligente','Cama matrimonial en planta baja más altillo con capacidad extra. Máximo aprovechamiento del espacio.'],
+            ].map(([icon,title,desc])=>(
+              <div key={title} style={{display:'flex',gap:'1.2rem',alignItems:'flex-start',marginBottom:'1.4rem'}}>
+                <span style={{fontSize:'1.4rem',marginTop:'1px'}}>{icon}</span>
+                <div>
+                  <div style={{fontSize:'0.88rem',fontWeight:400,color:'#EDF5F2',marginBottom:'0.2rem'}}>{title}</div>
+                  <div style={{fontSize:'0.82rem',fontStyle:'italic',color:'rgba(237,245,242,0.5)',lineHeight:1.6}}>{desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{marginBottom:'2.5rem',paddingBottom:'2rem',borderBottom:'1px solid rgba(200,168,107,0.12)'}}>
+            <h2 style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'1.5rem',letterSpacing:'0.06em',color:'#EDF5F2',marginBottom:'1.2rem'}}>Sobre la propiedad</h2>
+            <p style={{fontSize:'0.9rem',lineHeight:1.85,color:'rgba(237,245,242,0.65)',fontStyle:'italic',marginBottom:'1rem'}}>Monoambiente bien pensado que integra cocina, comedor y zona de estar en el primer piso, con altillo para dormir adicional. Todo el espacio está aprovechado sin que falte nada.</p>
+            <p style={{fontSize:'0.9rem',lineHeight:1.85,color:'rgba(237,245,242,0.65)',fontStyle:'italic',marginBottom:'1rem'}}>La estufa a leña y la terraza con parrilla hacen de esta cabaña una opción perfecta en cualquier época del año. Las mascotas son bienvenidas — el entorno natural lo permite.</p>
+            <p style={{fontSize:'0.9rem',lineHeight:1.85,color:'rgba(237,245,242,0.65)',fontStyle:'italic'}}>Capacidad para 4 personas. Rating 4.90 con 15 reseñas — una de las cabañas más valoradas del portafolio en Puertecillo.</p>
+          </div>
+
+          <div style={{marginBottom:'2.5rem',paddingBottom:'2rem',borderBottom:'1px solid rgba(200,168,107,0.12)'}}>
+            <h2 style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'1.5rem',letterSpacing:'0.06em',color:'#EDF5F2',marginBottom:'1.5rem'}}>Lo que ofrece</h2>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.8rem'}}>
+              {AMENITIES.map(([icon,label])=>(
+                <div key={label} style={{display:'flex',alignItems:'center',gap:'0.8rem',padding:'0.5rem 0'}}>
+                  <span style={{fontSize:'1.1rem'}}>{icon}</span>
+                  <span style={{fontSize:'0.85rem',color:'rgba(237,245,242,0.65)'}}>{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{marginBottom:'2rem',paddingBottom:'2rem',borderBottom:'1px solid rgba(200,168,107,0.12)'}}>
+            <h2 style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'1.5rem',letterSpacing:'0.06em',color:'#EDF5F2',marginBottom:'0.8rem'}}>Check-in / Check-out</h2>
+            <div style={{display:'flex',gap:'3rem',flexWrap:'wrap'}}>
+              <div><div style={{fontSize:'0.65rem',letterSpacing:'0.2em',textTransform:'uppercase',color:'rgba(237,245,242,0.4)',marginBottom:'4px'}}>Check-in</div><div style={{fontSize:'1rem',color:'#C8A86B'}}>Desde las 15:00</div></div>
+              <div><div style={{fontSize:'0.65rem',letterSpacing:'0.2em',textTransform:'uppercase',color:'rgba(237,245,242,0.4)',marginBottom:'4px'}}>Check-out</div><div style={{fontSize:'1rem',color:'#C8A86B'}}>Antes de las 12:00</div></div>
+              <div><div style={{fontSize:'0.65rem',letterSpacing:'0.2em',textTransform:'uppercase',color:'rgba(237,245,242,0.4)',marginBottom:'4px'}}>Mascotas</div><div style={{fontSize:'1rem',color:'rgba(74,222,128,0.9)'}}>Permitidas ✓</div></div>
+            </div>
+          </div>
+
+          <div id="disponibilidad" style={{marginBottom:'2.5rem'}}>
+            <h2 style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'1.5rem',letterSpacing:'0.06em',color:'#EDF5F2',marginBottom:'0.4rem'}}>Disponibilidad</h2>
+            <p style={{fontSize:'0.78rem',fontStyle:'italic',color:'rgba(237,245,242,0.4)',marginBottom:'0.6rem'}}>Disponibilidad orientativa — las fechas reales se confirman en Airbnb al momento de reservar.</p>
+            <p style={{fontSize:'0.72rem',color:'rgba(200,168,107,0.5)',marginBottom:'1.5rem',letterSpacing:'0.05em'}}>⚠ Este calendario es ilustrativo y no refleja la disponibilidad real de Airbnb.</p>
+            <Calendar propId={10}/>
+          </div>
+        </div>
+
+        <div className="sticky-card" style={{position:'sticky',top:'80px'}}>
+          <div style={{background:'#1B3D52',border:'1px solid rgba(200,168,107,0.18)',padding:'2rem'}}>
+            <div style={{display:'flex',alignItems:'baseline',gap:'0.5rem',marginBottom:'0.4rem'}}>
+              <span style={{fontFamily:'Bebas Neue,sans-serif',fontSize:'2.2rem',color:'#EDF5F2'}}>$50.000</span>
+              <span style={{fontSize:'0.75rem',color:'rgba(237,245,242,0.45)',letterSpacing:'0.1em'}}>CLP / noche</span>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:'0.5rem',marginBottom:'1.5rem'}}>
+              <span style={{color:'#C8A86B',fontSize:'0.88rem'}}>★ 4.90</span>
+              <span style={{fontSize:'0.75rem',color:'rgba(237,245,242,0.4)'}}>15 reseñas</span>
+            </div>
+            <a href="https://www.airbnb.cl/rooms/1222567922199700212" target="_blank" rel="noopener" style={{display:'block',width:'100%',background:'#D45E28',color:'#EDF5F2',padding:'1rem',fontFamily:'DM Sans,sans-serif',fontSize:'0.8rem',letterSpacing:'0.18em',textTransform:'uppercase',textDecoration:'none',textAlign:'center',transition:'background 0.3s',marginBottom:'0.8rem'}} onMouseEnter={e=>e.currentTarget.style.background='#b84d20'} onMouseLeave={e=>e.currentTarget.style.background='#D45E28'}>Reservar en Airbnb</a>
+            <a href="https://wa.me/56992908598?text=Hola%2C+me+interesa+la+Caba%C3%B1a+Vive+Puertecillo+en+StayPuerte" target="_blank" rel="noopener" style={{display:'block',width:'100%',background:'transparent',border:'1px solid #25D366',color:'#25D366',padding:'0.9rem',fontFamily:'DM Sans,sans-serif',fontSize:'0.8rem',letterSpacing:'0.18em',textTransform:'uppercase',textDecoration:'none',textAlign:'center',transition:'all 0.3s'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(37,211,102,0.08)'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>💬 Consultar por WhatsApp</a>
+            <div style={{borderTop:'1px solid rgba(200,168,107,0.12)',marginTop:'1.5rem',paddingTop:'1.5rem'}}>
+              {[['Precio base','$50.000 / noche'],['Limpieza','$10.000'],['Cargo servicio','$7.000']].map(([k,v])=>(
+                <div key={k} style={{display:'flex',justifyContent:'space-between',marginBottom:'0.6rem',fontSize:'0.8rem'}}>
+                  <span style={{color:'rgba(237,245,242,0.5)'}}>{k}</span><span style={{color:'rgba(237,245,242,0.75)'}}>{v}</span>
+                </div>
+              ))}
+              <div style={{display:'flex',justifyContent:'space-between',marginTop:'0.8rem',paddingTop:'0.8rem',borderTop:'1px solid rgba(200,168,107,0.1)',fontSize:'0.85rem'}}>
+                <span style={{color:'#EDF5F2'}}>Total estimado</span>
+                <span style={{color:'#C8A86B',fontFamily:'Bebas Neue,sans-serif',fontSize:'1.1rem'}}>$67.000</span>
+              </div>
+              <p style={{fontSize:'0.65rem',color:'rgba(237,245,242,0.28)',marginTop:'0.5rem',fontStyle:'italic'}}>* Estimado para 1 noche. El total real se calcula en Airbnb.</p>
+            </div>
+            <div style={{borderTop:'1px solid rgba(200,168,107,0.12)',marginTop:'1.5rem',paddingTop:'1.5rem',display:'flex',gap:'0.8rem',alignItems:'center'}}>
+              <img src="staypuerte-logo.png" alt="StayPuerte" style={{height:'36px',width:'auto'}}/>
+              <div>
+                <div style={{fontSize:'0.78rem',color:'#EDF5F2',fontWeight:400}}>Gestionado por StayPuerte</div>
+                <div style={{fontSize:'0.68rem',color:'rgba(237,245,242,0.4)',fontStyle:'italic'}}>Tasa de respuesta 100% · Responde en 1 hora</div>
+              </div>
+            </div>
+          </div>
+          <div style={{marginTop:'1rem',border:'1px solid rgba(200,168,107,0.12)',overflow:'hidden'}}>
+            <iframe src="https://maps.google.com/maps?q=Puertecillo%2C+Chile&output=embed&hl=es&z=13" style={{width:'100%',height:'200px',border:'none',display:'block',filter:'saturate(0.6) brightness(0.8)'}} loading="lazy" title="Ubicación Cabaña Vive Puertecillo"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <footer style={{background:'#050f16',borderTop:'1px solid rgba(200,168,107,0.1)',padding:'2rem 5vw',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'1rem'}}>
+        <a href="index.html"><img src="staypuerte-logo.png" alt="StayPuerte" style={{height:'36px',width:'auto'}}/></a>
+        <span style={{fontSize:'0.68rem',color:'rgba(237,245,242,0.25)'}}>© 2026 StayPuerte · Puertecillo, Chile</span>
+      </footer>
+
+      {gallery!==null&&<GalleryModal photos={PHOTOS} start={gallery} onClose={()=>setGallery(null)}/>}
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
