@@ -32,6 +32,7 @@
     @keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
     .fade-in { animation: fadeIn 0.5s ease forwards; }
     @keyframes slideUp { from { opacity:0; transform:translateY(32px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes marquee { 0% { transform:translateX(0); } 100% { transform:translateX(-50%); } }
 
     /* ── Home split CSS (indexv2) ── */
     .sp-nav {
@@ -582,31 +583,36 @@ const HomePage = ({ setPage }) => {
           <div style={{ fontFamily:'ui-monospace, Menlo, monospace', fontSize:'0.55rem', letterSpacing:'0.3em', color:`${P.accent}80`, writingMode:'vertical-rl' }}>34.10°S</div>
         </div>
 
-        {/* MOBILE DIVIDER */}
-        <div className="sp-mobile-divider" style={{ background:P.deep, position:'relative', overflow:'hidden' }}>
-          {/* wave top */}
-          <svg viewBox="0 0 375 28" preserveAspectRatio="none" style={{ display:'block', width:'100%', height:28 }}>
-            <path d="M0,14 C50,28 100,0 150,14 C200,28 260,0 310,14 C335,21 355,10 375,14 L375,28 L0,28 Z" fill={P.bg} />
-          </svg>
-          {/* content */}
-          <div style={{ padding:'1.4rem 0 1.6rem', display:'flex', flexDirection:'column', alignItems:'center', gap:'0.7rem', position:'relative' }}>
-            {/* animated wave lines */}
-            <svg viewBox="0 0 160 36" style={{ width:160, opacity:0.55 }}>
-              <path d="M0,18 C20,6 40,30 60,18 C80,6 100,30 120,18 C140,6 152,28 160,18" fill="none" stroke="#C8A86B" strokeWidth="1.5" strokeLinecap="round"/>
-              <path d="M0,26 C20,14 40,38 60,26 C80,14 100,38 120,26 C140,14 152,34 160,26" fill="none" stroke="#C8A86B" strokeWidth="0.8" strokeLinecap="round" opacity="0.45"/>
-            </svg>
-            {/* surfboard icon */}
-            <svg viewBox="0 0 24 60" style={{ width:14, opacity:0.7 }}>
-              <ellipse cx="12" cy="28" rx="6" ry="26" fill="none" stroke="#C8A86B" strokeWidth="1.2"/>
-              <line x1="12" y1="8" x2="12" y2="48" stroke="#C8A86B" strokeWidth="0.8" opacity="0.5"/>
-              <ellipse cx="12" cy="38" rx="2.5" ry="4" fill="#C8A86B" opacity="0.5"/>
-            </svg>
-            <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'0.6rem', letterSpacing:'0.55em', color:`${P.accent}70`, textTransform:'uppercase' }}>34°06′S · 71°55′W</div>
+        {/* MOBILE DIVIDER — surf ribbon */}
+        <div className="sp-mobile-divider" style={{ background:P.deep, position:'relative', overflow:'hidden', borderTop:`1px solid ${P.accent}22`, borderBottom:`1px solid ${P.accent}22` }}>
+          {/* ambient glow */}
+          <div style={{ position:'absolute', inset:0, background:`radial-gradient(ellipse at 50% 50%, ${P.accent}0a 0%, transparent 70%)`, pointerEvents:'none' }} />
+          {/* logo + branding row */}
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:'1rem', padding:'1rem 24px 0.7rem', position:'relative' }}>
+            <div style={{ flex:1, height:'1px', background:`linear-gradient(to right, transparent, ${P.accent}35)` }} />
+            <img src={LOGO} alt="StayPuerte" style={{ height:28, filter:'drop-shadow(0 0 10px rgba(200,168,107,0.3))' }} />
+            <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-start', gap:2 }}>
+              <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'0.65rem', letterSpacing:'0.45em', color:P.accent, lineHeight:1 }}>STAY · PUERTE</div>
+              <div style={{ fontFamily:'ui-monospace,monospace', fontSize:'0.45rem', letterSpacing:'0.25em', color:`${P.accent}60` }}>EST. 2024 · PUERTECILLO</div>
+            </div>
+            <div style={{ flex:1, height:'1px', background:`linear-gradient(to left, transparent, ${P.accent}35)` }} />
           </div>
-          {/* wave bottom */}
-          <svg viewBox="0 0 375 28" preserveAspectRatio="none" style={{ display:'block', width:'100%', height:28 }}>
-            <path d="M0,14 C50,0 100,28 150,14 C200,0 260,28 310,14 C335,7 355,18 375,14 L375,0 L0,0 Z" fill={P.alt} />
-          </svg>
+          {/* scrolling ticker */}
+          <div style={{ overflow:'hidden', borderTop:`1px solid ${P.accent}14`, padding:'0.45rem 0', position:'relative' }}>
+            <div style={{ display:'inline-flex', gap:'2.5rem', whiteSpace:'nowrap', animation:'marquee 22s linear infinite', fontFamily:'ui-monospace,monospace', fontSize:'0.5rem', letterSpacing:'0.28em', color:`${P.accent}65` }}>
+              {[0,1].map(i => (
+                <span key={i} style={{ display:'inline-flex', gap:'2.5rem' }}>
+                  <span>34°06′S · 71°55′W</span><span>—</span>
+                  <span>SWELL 2.1m</span><span>—</span>
+                  <span>VIENTO SE 8kt</span><span>—</span>
+                  <span>MAREA ↑ 1.4m</span><span>—</span>
+                  <span>14°C · NUBLADO PARCIAL</span><span>—</span>
+                  <span>12 PROPIEDADES ACTIVAS</span><span>—</span>
+                  <span>★ 4.85</span><span>—</span>
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* RIGHT — HUÉSPEDES */}
