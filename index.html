@@ -1086,34 +1086,12 @@ const NosotrosPage = ({ setPage }) => {
           <h2 style={{ ...S.title, fontSize: isMobile?'2.8rem':'clamp(2.8rem,5vw,4.5rem)' }}>Los <span style={{ color:P.accent }}>fundadores</span></h2>
         </div>
 
-        {/* Federico */}
+        {/* Julia */}
         <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'3rem':'6rem', alignItems:'center', marginBottom: isMobile?'4rem':'7rem' }}>
-          <FotoSlot src="nosotros/fede-surf.jpg" alt="Federico Jarpa surfeando" height={isMobile?'300px':'440px'} />
+          <FotoSlot src="nosotros/julia-playa.jpg" alt="Julia Villanueva en la playa" height={isMobile?'260px':'360px'} />
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:'0.5rem' }}>
-              <span style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'0.7rem', letterSpacing:'0.38em', color:P.accent }}>01 · FUNDADOR</span>
-            </div>
-            <h3 style={{ ...S.title, fontSize: isMobile?'2.8rem':'clamp(2.5rem,4vw,4rem)', marginBottom:'0.3rem' }}>Federico<br/>Jarpa</h3>
-            <div style={{ fontFamily:'DM Sans,sans-serif', fontSize:'0.78rem', letterSpacing:'0.22em', textTransform:'uppercase', color:`${P.accent}cc`, marginBottom:'1.6rem' }}>Surfista · Emprendedor · Puertecillo</div>
-            <p style={{ fontSize:'0.95rem', fontStyle:'italic', color:`${P.text}80`, lineHeight:1.85, marginBottom:'1.4rem' }}>
-              Surfista desde los 16 años, Federico creció con el Pacífico como patio de juegos. Fundador de <strong style={{ color:P.text, fontStyle:'normal' }}>Reparanding</strong>, combina su pasión por las olas con visión de negocio. Conoce cada rincón de la costa, cada comportamiento del mar y cada razón por la que la gente vuelve una y otra vez a Puertecillo.
-            </p>
-            <p style={{ fontSize:'0.95rem', fontStyle:'italic', color:`${P.text}80`, lineHeight:1.85 }}>
-              En StayPuerte aporta la estrategia operacional, la conexión con el territorio y ese feeling de surfista que sabe exactamente qué busca un huésped cuando llega a la costa.
-            </p>
-            <div style={{ display:'flex', gap:8, marginTop:'1.8rem', flexWrap:'wrap' }}>
-              {['Surf','Naturaleza','Emprendimiento','Puertecillo'].map(v => (
-                <span key={v} style={{ padding:'5px 12px', border:`1px solid ${P.accent}44`, fontSize:'0.6rem', letterSpacing:'0.18em', textTransform:'uppercase', color:`${P.text}c0` }}>{v}</span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Julia */}
-        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'3rem':'6rem', alignItems:'center' }}>
-          <div style={{ order: isMobile?2:2 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:'0.5rem' }}>
-              <span style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'0.7rem', letterSpacing:'0.38em', color:P.accent }}>02 · FUNDADORA</span>
+              <span style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'0.7rem', letterSpacing:'0.38em', color:P.accent }}>01 · FUNDADORA</span>
             </div>
             <h3 style={{ ...S.title, fontSize: isMobile?'2.8rem':'clamp(2.5rem,4vw,4rem)', marginBottom:'0.3rem' }}>Julia<br/>Villanueva</h3>
             <div style={{ fontFamily:'DM Sans,sans-serif', fontSize:'0.78rem', letterSpacing:'0.22em', textTransform:'uppercase', color:`${P.accent}cc`, marginBottom:'1.6rem' }}>Profesora · Amante de los animales · Soñadora</div>
@@ -1129,8 +1107,30 @@ const NosotrosPage = ({ setPage }) => {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Federico */}
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'3rem':'6rem', alignItems:'center' }}>
+          <div style={{ order: isMobile?2:2 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:'0.5rem' }}>
+              <span style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'0.7rem', letterSpacing:'0.38em', color:P.accent }}>02 · FUNDADOR</span>
+            </div>
+            <h3 style={{ ...S.title, fontSize: isMobile?'2.8rem':'clamp(2.5rem,4vw,4rem)', marginBottom:'0.3rem' }}>Federico<br/>Jarpa</h3>
+            <div style={{ fontFamily:'DM Sans,sans-serif', fontSize:'0.78rem', letterSpacing:'0.22em', textTransform:'uppercase', color:`${P.accent}cc`, marginBottom:'1.6rem' }}>Surfista · Emprendedor · Puertecillo</div>
+            <p style={{ fontSize:'0.95rem', fontStyle:'italic', color:`${P.text}80`, lineHeight:1.85, marginBottom:'1.4rem' }}>
+              Federico creció con el Pacífico como patio de juegos. Fundador de <strong style={{ color:P.text, fontStyle:'normal' }}>Reparanding</strong>, combina su pasión por las olas con visión de negocio. Conoce cada rincón de la costa, cada comportamiento del mar y cada razón por la que la gente vuelve una y otra vez a Puertecillo.
+            </p>
+            <p style={{ fontSize:'0.95rem', fontStyle:'italic', color:`${P.text}80`, lineHeight:1.85 }}>
+              En StayPuerte aporta la estrategia operacional, la conexión con el territorio y ese feeling de surfista que sabe exactamente qué busca un huésped cuando llega a la costa.
+            </p>
+            <div style={{ display:'flex', gap:8, marginTop:'1.8rem', flexWrap:'wrap' }}>
+              {['Surf','Naturaleza','Emprendimiento','Puertecillo'].map(v => (
+                <span key={v} style={{ padding:'5px 12px', border:`1px solid ${P.accent}44`, fontSize:'0.6rem', letterSpacing:'0.18em', textTransform:'uppercase', color:`${P.text}c0` }}>{v}</span>
+              ))}
+            </div>
+          </div>
           <div style={{ order: isMobile?1:2 }}>
-            <FotoSlot src="nosotros/julia-playa.jpg" alt="Julia Villanueva en la playa" height={isMobile?'300px':'440px'} />
+            <FotoSlot src="nosotros/fede-surf.jpg" alt="Federico Jarpa surfeando" height={isMobile?'260px':'360px'} />
           </div>
         </div>
       </section>
