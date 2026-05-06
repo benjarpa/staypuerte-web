@@ -41,6 +41,7 @@
     }
     .sp-nav-links { display: flex; list-style: none; gap: 2.2rem; margin: 0; padding: 0; }
     .sp-nav-contact { display: flex; align-items: center; gap: 1rem; }
+    .sp-mob-btn { display: none; }
     .sp-split-body { flex: 1; display: flex; min-height: 0; position: relative; }
     .sp-panel {
       flex: 0.5; padding: 72px 64px 48px; position: relative;
@@ -81,6 +82,9 @@
       .sp-nav { padding: 14px 20px; }
       .sp-nav-links { display: none; }
       .sp-nav-contact { font-size: 0.65rem; }
+      .sp-mob-btn { display: flex; background: none; border: 1px solid rgba(200,168,107,0.35); color: #C8A86B; width: 38px; height: 38px; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; flex-shrink: 0; }
+      .sp-lang { display: none; }
+      .sp-sep { display: none; }
       .sp-horizon { display: none; }
       .sp-split-body { flex-direction: column; min-height: auto; }
       .sp-panel { flex: none !important; padding: 48px 24px 36px; cursor: default; }
@@ -460,6 +464,7 @@ const FAQAccordion = () => {
 ════════════════════════════════════════════════ */
 const HomePage = ({ setPage }) => {
   const [hov, setHov] = useState(null);
+  const [mobMenu, setMobMenu] = useState(false);
   const isMobile = useIsMobile();
 
   const NAV_LINKS = ['Propiedades','Anfitriones','Nosotros','Contacto'];
@@ -488,10 +493,22 @@ const HomePage = ({ setPage }) => {
         </ul>
         <div className="sp-nav-contact" style={{ fontSize:'0.62rem', letterSpacing:'0.22em', textTransform:'uppercase', color:`${P.text}80` }}>
           <a href="tel:+56992908598" style={{ color:P.accent, textDecoration:'none' }}>+56 9 9290 8598</a>
-          <span style={{ width:1, height:14, background:`${P.accent}33` }} />
-          <span><span style={{ color:P.text }}>ES</span> <span style={{ color:`${P.accent}55` }}>/</span> <span style={{ color:`${P.text}45` }}>EN</span></span>
+          <span className="sp-sep" style={{ width:1, height:14, background:`${P.accent}33` }} />
+          <span className="sp-lang"><span style={{ color:P.text }}>ES</span> <span style={{ color:`${P.accent}55` }}>/</span> <span style={{ color:`${P.text}45` }}>EN</span></span>
+          <button className="sp-mob-btn" onClick={() => setMobMenu(m => !m)}>{mobMenu ? '✕' : '☰'}</button>
         </div>
       </nav>
+      {mobMenu && (
+        <div style={{ position:'fixed', top:'57px', left:0, right:0, bottom:0, zIndex:100, background:'rgba(10,28,39,0.97)', backdropFilter:'blur(14px)', padding:'1.8rem 24px', display:'flex', flexDirection:'column', animation:'fadeIn 0.18s ease' }}>
+          {NAV_LINKS.map(l => (
+            <button key={l} onClick={() => { setMobMenu(false); if(l==='Propiedades')setPage('arrendar'); if(l==='Anfitriones')setPage('propietarios'); if(l==='Nosotros')setPage('nosotros'); if(l==='Contacto')setPage('contacto'); }}
+              style={{ display:'block', background:'none', border:'none', borderBottom:'1px solid rgba(200,168,107,0.12)', color:'rgba(237,245,242,0.9)', fontFamily:'Bebas Neue,sans-serif', fontSize:'2.2rem', letterSpacing:'0.1em', textTransform:'uppercase', padding:'0.9rem 0', cursor:'pointer', textAlign:'left' }}>
+              {l}
+            </button>
+          ))}
+          <a href="tel:+56992908598" style={{ marginTop:'2rem', color:'#C8A86B', fontFamily:'DM Sans,sans-serif', fontSize:'0.85rem', letterSpacing:'0.2em', textDecoration:'none' }}>+56 9 9290 8598</a>
+        </div>
+      )}
 
       {/* HORIZON STRIP */}
       <div className="sp-horizon" style={{ background:P.deep, borderBottom:`1px solid ${P.accent}22` }}>
@@ -1036,7 +1053,7 @@ const NosotrosPage = ({ setPage }) => {
     <div style={{ paddingTop:'80px' }} className="fade-in">
 
       {/* HERO */}
-      <section style={{ background:P.bg, padding: isMobile?'5rem 5vw 4rem':'7rem 5vw 6rem', position:'relative', overflow:'hidden', display:'flex', alignItems:'center', minHeight: isMobile?'auto':'70vh' }}>
+      <section style={{ background:P.bg, padding: isMobile?'3rem 5vw 2.5rem':'7rem 5vw 6rem', position:'relative', overflow:'hidden', display:'flex', alignItems:'center', minHeight: isMobile?'auto':'70vh' }}>
         <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'26vw', color:`${P.accent}04`, right:'-1rem', top:'50%', transform:'translateY(-50%)', userSelect:'none', pointerEvents:'none', lineHeight:1 }}>STAY</div>
         <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'3rem':'6rem', alignItems:'center', width:'100%', position:'relative' }}>
           <div>
@@ -1059,9 +1076,9 @@ const NosotrosPage = ({ setPage }) => {
       </section>
 
       {/* MISIÓN & VISIÓN */}
-      <section id="historia" style={{ background:P.alt, padding: isMobile?'4rem 5vw':'6rem 5vw', position:'relative', overflow:'hidden' }}>
+      <section id="historia" style={{ background:P.alt, padding: isMobile?'2.5rem 5vw':'6rem 5vw', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'18vw', color:`${P.accent}03`, left:'-1rem', top:'50%', transform:'translateY(-50%)', userSelect:'none', pointerEvents:'none' }}>PUERTE</div>
-        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'3rem':'5rem', position:'relative' }}>
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'2rem':'5rem', position:'relative' }}>
           <div style={{ borderLeft:`2px solid ${P.accent}`, paddingLeft:'2rem' }}>
             <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'0.75rem', letterSpacing:'0.4em', color:P.accent, marginBottom:'1.2rem' }}>MISIÓN</div>
             <h3 style={{ ...S.title, fontSize:'clamp(1.8rem,3vw,2.8rem)', marginBottom:'1rem' }}>Conectar personas<br/>con lugares que<br/><span style={{ color:P.accent }}>inspiran</span>.</h3>
@@ -1080,14 +1097,14 @@ const NosotrosPage = ({ setPage }) => {
       </section>
 
       {/* FUNDADORES */}
-      <section id="fundadores" style={{ background:P.bg, padding: isMobile?'4rem 5vw':'7rem 5vw' }}>
-        <div style={{ textAlign:'center', marginBottom: isMobile?'3rem':'5rem' }}>
+      <section id="fundadores" style={{ background:P.bg, padding: isMobile?'2.5rem 5vw':'7rem 5vw' }}>
+        <div style={{ textAlign:'center', marginBottom: isMobile?'2rem':'5rem' }}>
           <span style={{ ...S.tag, textAlign:'center' }}>Las personas detrás</span>
           <h2 style={{ ...S.title, fontSize: isMobile?'2.8rem':'clamp(2.8rem,5vw,4.5rem)' }}>Los <span style={{ color:P.accent }}>fundadores</span></h2>
         </div>
 
         {/* Julia */}
-        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'3rem':'6rem', alignItems:'center', marginBottom: isMobile?'4rem':'7rem' }}>
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'1rem':'6rem', alignItems:'center', marginBottom: isMobile?'2.5rem':'7rem' }}>
           <FotoSlot src="nosotros/julia-playa.jpg" alt="Julia Villanueva en la playa" height={isMobile?'200px':'260px'} />
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:'0.5rem' }}>
@@ -1110,7 +1127,7 @@ const NosotrosPage = ({ setPage }) => {
         </div>
 
         {/* Federico */}
-        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'3rem':'6rem', alignItems:'center' }}>
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'1rem':'6rem', alignItems:'center' }}>
           <div style={{ order: isMobile?2:2 }}>
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:'0.5rem' }}>
               <span style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'0.7rem', letterSpacing:'0.38em', color:P.accent }}>02 · FUNDADOR</span>
@@ -1136,7 +1153,7 @@ const NosotrosPage = ({ setPage }) => {
       </section>
 
       {/* VALORES */}
-      <section id="valores" style={{ background:P.alt, padding: isMobile?'4rem 5vw':'6rem 5vw', position:'relative', overflow:'hidden' }}>
+      <section id="valores" style={{ background:P.alt, padding: isMobile?'2.5rem 5vw':'6rem 5vw', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'20vw', color:`${P.accent}03`, right:'-1rem', bottom:'-2rem', userSelect:'none', pointerEvents:'none', lineHeight:1 }}>AMOR</div>
         <div style={{ textAlign:'center', marginBottom: isMobile?'2.5rem':'4rem', position:'relative' }}>
           <span style={{ ...S.tag, textAlign:'center' }}>Lo que nos mueve</span>
@@ -1161,7 +1178,7 @@ const NosotrosPage = ({ setPage }) => {
       </section>
 
       {/* CTA */}
-      <section style={{ background:P.bg, padding: isMobile?'4rem 5vw':'6rem 5vw', textAlign:'center', position:'relative', overflow:'hidden' }}>
+      <section style={{ background:P.bg, padding: isMobile?'2.5rem 5vw':'6rem 5vw', textAlign:'center', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'22vw', color:`${P.alt}88`, top:'50%', left:'50%', transform:'translate(-50%,-50%)', userSelect:'none', whiteSpace:'nowrap', pointerEvents:'none' }}>PUERTE</div>
         <div style={{ position:'relative', maxWidth:'560px', margin:'0 auto' }}>
           <h2 style={{ ...S.title, fontSize: isMobile?'2.5rem':'clamp(2.8rem,5vw,4.5rem)', marginBottom:'1.2rem' }}>
