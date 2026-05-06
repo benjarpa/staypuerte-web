@@ -1174,11 +1174,10 @@ const NosotrosPage = ({ setPage }) => {
           <span style={{ ...S.tag, textAlign:'center' }}>Lo que nos mueve</span>
           <h2 style={{ ...S.title, fontSize: isMobile?'2.5rem':'clamp(2.5rem,4.5vw,4rem)' }}>Nuestros <span style={{ color:P.accent }}>valores</span></h2>
         </div>
-        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr 1fr':'repeat(5,1fr)', gap:'1px', background:`${P.accent}18`, border:`1px solid ${P.accent}18`, position:'relative' }}>
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr 1fr':'repeat(4,1fr)', gap:'1px', background:`${P.accent}18`, border:`1px solid ${P.accent}18`, position:'relative' }}>
           {[
             { icon:'🌊', t:'Costa primero',    d:'Cada decisión respeta el entorno natural de Puertecillo.' },
             { icon:'🐾', t:'Amor animal',      d:'Julia y Fede son apasionados por los animales — y las propiedades pet-friendly lo demuestran.' },
-            { icon:'🤝', t:'Trato cercano',    d:'Sin scripts. Sin call centers. Siempre hay una persona real al otro lado.' },
             { icon:'🏄', t:'Vivir el lugar',   d:'Conocemos Puertecillo porque lo vivimos, no porque lo gestionamos desde lejos.' },
             { icon:'✦',  t:'Sin letra chica',  d:'Transparencia total: comisiones claras, reportes reales, comunicación directa.' },
           ].map(v => (
