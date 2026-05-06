@@ -268,6 +268,10 @@ const Nav = ({ page, setPage, scrolled }) => {
 
   const links = page === 'propietarios'
     ? [['#servicios','Servicios'],['#nosotros','Nosotros'],['#proceso','Proceso'],['#faq','FAQ'],['#contacto','Contacto']]
+    : page === 'nosotros'
+    ? [['#historia','Historia'],['#fundadores','Fundadores'],['#valores','Valores']]
+    : page === 'contacto'
+    ? [['#formulario','Formulario'],['#ubicacion','Ubicación']]
     : [['#propiedades','Propiedades'],['#extras','Extras'],['#contacto-arr','Contactar']];
 
   const btnBase = { padding:'0.7rem 1.8rem', fontFamily:'DM Sans,sans-serif', fontSize:'0.72rem', letterSpacing:'0.18em', textTransform:'uppercase', cursor:'pointer', transition:'all 0.25s', border:'none' };
@@ -475,7 +479,7 @@ const HomePage = ({ setPage }) => {
         <ul className="sp-nav-links">
           {NAV_LINKS.map(l => (
             <li key={l}>
-              <a href="#" onClick={e => { e.preventDefault(); if (l==='Propiedades') setPage('arrendar'); if (l==='Anfitriones') setPage('propietarios'); }}
+              <a href="#" onClick={e => { e.preventDefault(); if (l==='Propiedades') setPage('arrendar'); if (l==='Anfitriones') setPage('propietarios'); if (l==='Nosotros') setPage('nosotros'); if (l==='Contacto') setPage('contacto'); }}
                 style={{ fontFamily:T.body, fontSize:'0.7rem', letterSpacing:'0.26em', textTransform:'uppercase', color:`${P.text}b0`, textDecoration:'none' }}>
                 {l}
               </a>
@@ -1005,6 +1009,298 @@ const PropietariosPage = ({ setPage }) => {
 };
 
 /* ════════════════════════════════════════════════
+   NOSOTROS PAGE
+════════════════════════════════════════════════ */
+const FotoSlot = ({ src, alt, height = '420px' }) => {
+  const [err, setErr] = useState(false);
+  return (
+    <div style={{ width:'100%', height, overflow:'hidden', border:`1px solid ${P.accent}22`, position:'relative', background:P.deep }}>
+      {!err
+        ? <img src={src} alt={alt} onError={() => setErr(true)} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
+        : <div style={{ width:'100%', height:'100%', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:8, position:'relative', overflow:'hidden' }}>
+            <svg style={{ position:'absolute', inset:0, width:'100%', height:'100%', opacity:0.06 }} xmlns="http://www.w3.org/2000/svg">
+              <defs><pattern id="slt" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><line x1="0" y1="0" x2="0" y2="22" stroke="#C8A86B" strokeWidth="1"/></pattern></defs>
+              <rect width="100%" height="100%" fill="url(#slt)"/>
+            </svg>
+            <span style={{ fontFamily:'ui-monospace,monospace', fontSize:'0.6rem', letterSpacing:'0.2em', color:`${P.accent}55`, textTransform:'uppercase', position:'relative' }}>▢ {alt}</span>
+            <span style={{ fontFamily:'ui-monospace,monospace', fontSize:'0.52rem', letterSpacing:'0.14em', color:`${P.accent}35`, position:'relative' }}>nosotros/{src.split('/').pop()}</span>
+          </div>
+      }
+    </div>
+  );
+};
+
+const NosotrosPage = ({ setPage }) => {
+  const isMobile = useIsMobile();
+  return (
+    <div style={{ paddingTop:'80px' }} className="fade-in">
+
+      {/* HERO */}
+      <section style={{ background:P.bg, padding: isMobile?'5rem 5vw 4rem':'7rem 5vw 6rem', position:'relative', overflow:'hidden', display:'flex', alignItems:'center', minHeight: isMobile?'auto':'70vh' }}>
+        <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'26vw', color:`${P.accent}04`, right:'-1rem', top:'50%', transform:'translateY(-50%)', userSelect:'none', pointerEvents:'none', lineHeight:1 }}>STAY</div>
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'3rem':'6rem', alignItems:'center', width:'100%', position:'relative' }}>
+          <div>
+            <span style={S.tag}>Quiénes somos</span>
+            <h1 style={{ ...S.title, fontSize: isMobile?'3.2rem':'clamp(3.5rem,6vw,6rem)', marginBottom:'1.6rem' }}>
+              Dos personas<br/>que aman<br/><span style={{ color:P.accent }}>este lugar</span>.
+            </h1>
+            <p style={{ fontSize:'1.05rem', fontStyle:'italic', color:`${P.text}99`, lineHeight:1.85, maxWidth:'480px', marginBottom:'2rem' }}>
+              StayPuerte nació en Puertecillo — un rincón de la costa chilena con algunas de las mejores olas del Pacífico. Lo fundamos porque creemos que las propiedades de esta zona merecen algo más que administración genérica: merecen cuidado real, atención boutique y amor genuino por el lugar.
+            </p>
+            <div style={{ display:'flex', gap:'1rem', flexWrap:'wrap' }}>
+              <button onClick={() => setPage('arrendar')} style={{ ...S.btnPrimary }}>Ver propiedades</button>
+              <button onClick={() => setPage('contacto')} style={{ ...S.btnOutline }}>Contactar</button>
+            </div>
+          </div>
+          {!isMobile && (
+            <FotoSlot src="nosotros/foto-juntos.jpg" alt="Julia y Federico — Sur de Chile" height="480px" />
+          )}
+        </div>
+      </section>
+
+      {/* MISIÓN & VISIÓN */}
+      <section id="historia" style={{ background:P.alt, padding: isMobile?'4rem 5vw':'6rem 5vw', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'18vw', color:`${P.accent}03`, left:'-1rem', top:'50%', transform:'translateY(-50%)', userSelect:'none', pointerEvents:'none' }}>PUERTE</div>
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'3rem':'5rem', position:'relative' }}>
+          <div style={{ borderLeft:`2px solid ${P.accent}`, paddingLeft:'2rem' }}>
+            <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'0.75rem', letterSpacing:'0.4em', color:P.accent, marginBottom:'1.2rem' }}>MISIÓN</div>
+            <h3 style={{ ...S.title, fontSize:'clamp(1.8rem,3vw,2.8rem)', marginBottom:'1rem' }}>Conectar personas<br/>con lugares que<br/><span style={{ color:P.accent }}>inspiran</span>.</h3>
+            <p style={{ fontSize:'0.92rem', fontStyle:'italic', color:`${P.text}80`, lineHeight:1.85 }}>
+              Queremos que cada huésped viva una experiencia auténtica en la costa chilena, y que cada propietario sienta que su propiedad está en las mejores manos. Sin letra chica, sin call centers, sin burocracia innecesaria.
+            </p>
+          </div>
+          <div style={{ borderLeft:`2px solid ${P.accent}44`, paddingLeft:'2rem' }}>
+            <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'0.75rem', letterSpacing:'0.4em', color:`${P.accent}99`, marginBottom:'1.2rem' }}>VISIÓN</div>
+            <h3 style={{ ...S.title, fontSize:'clamp(1.8rem,3vw,2.8rem)', marginBottom:'1rem' }}>Ser <span style={{ color:P.accent }}>la referencia</span><br/>de hospitalidad<br/>en Puertecillo.</h3>
+            <p style={{ fontSize:'0.92rem', fontStyle:'italic', color:`${P.text}80`, lineHeight:1.85 }}>
+              Un destino donde cada estadía deja una huella, y donde las propiedades operan a su máximo potencial respetando el entorno natural que las hace únicas.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* FUNDADORES */}
+      <section id="fundadores" style={{ background:P.bg, padding: isMobile?'4rem 5vw':'7rem 5vw' }}>
+        <div style={{ textAlign:'center', marginBottom: isMobile?'3rem':'5rem' }}>
+          <span style={{ ...S.tag, textAlign:'center' }}>Las personas detrás</span>
+          <h2 style={{ ...S.title, fontSize: isMobile?'2.8rem':'clamp(2.8rem,5vw,4.5rem)' }}>Los <span style={{ color:P.accent }}>fundadores</span></h2>
+        </div>
+
+        {/* Federico */}
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'3rem':'6rem', alignItems:'center', marginBottom: isMobile?'4rem':'7rem' }}>
+          <FotoSlot src="nosotros/fede-surf.jpg" alt="Federico Jarpa surfeando" height={isMobile?'300px':'440px'} />
+          <div>
+            <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:'0.5rem' }}>
+              <span style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'0.7rem', letterSpacing:'0.38em', color:P.accent }}>01 · FUNDADOR</span>
+            </div>
+            <h3 style={{ ...S.title, fontSize: isMobile?'2.8rem':'clamp(2.5rem,4vw,4rem)', marginBottom:'0.3rem' }}>Federico<br/>Jarpa</h3>
+            <div style={{ fontFamily:'DM Sans,sans-serif', fontSize:'0.78rem', letterSpacing:'0.22em', textTransform:'uppercase', color:`${P.accent}cc`, marginBottom:'1.6rem' }}>Surfista · Emprendedor · Puertecillo</div>
+            <p style={{ fontSize:'0.95rem', fontStyle:'italic', color:`${P.text}80`, lineHeight:1.85, marginBottom:'1.4rem' }}>
+              Surfista desde los 16 años, Federico creció con el Pacífico como patio de juegos. Fundador de <strong style={{ color:P.text, fontStyle:'normal' }}>Reparanding</strong>, combina su pasión por las olas con visión de negocio. Conoce cada rincón de la costa, cada comportamiento del mar y cada razón por la que la gente vuelve una y otra vez a Puertecillo.
+            </p>
+            <p style={{ fontSize:'0.95rem', fontStyle:'italic', color:`${P.text}80`, lineHeight:1.85 }}>
+              En StayPuerte aporta la estrategia operacional, la conexión con el territorio y ese feeling de surfista que sabe exactamente qué busca un huésped cuando llega a la costa.
+            </p>
+            <div style={{ display:'flex', gap:8, marginTop:'1.8rem', flexWrap:'wrap' }}>
+              {['Surf','Naturaleza','Emprendimiento','Puertecillo'].map(v => (
+                <span key={v} style={{ padding:'5px 12px', border:`1px solid ${P.accent}44`, fontSize:'0.6rem', letterSpacing:'0.18em', textTransform:'uppercase', color:`${P.text}c0` }}>{v}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Julia */}
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'3rem':'6rem', alignItems:'center' }}>
+          <div style={{ order: isMobile?2:2 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:'0.5rem' }}>
+              <span style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'0.7rem', letterSpacing:'0.38em', color:P.accent }}>02 · FUNDADORA</span>
+            </div>
+            <h3 style={{ ...S.title, fontSize: isMobile?'2.8rem':'clamp(2.5rem,4vw,4rem)', marginBottom:'0.3rem' }}>Julia<br/>Villanueva</h3>
+            <div style={{ fontFamily:'DM Sans,sans-serif', fontSize:'0.78rem', letterSpacing:'0.22em', textTransform:'uppercase', color:`${P.accent}cc`, marginBottom:'1.6rem' }}>Profesora · Amante de los animales · Soñadora</div>
+            <p style={{ fontSize:'0.95rem', fontStyle:'italic', color:`${P.text}80`, lineHeight:1.85, marginBottom:'1.4rem' }}>
+              Profesora por vocación, Julia trae a StayPuerte la misma dedicación que pone en sus alumnos: atención al detalle, paciencia genuina e interés real por las personas. Cree profundamente que cada huésped merece sentirse en casa.
+            </p>
+            <p style={{ fontSize:'0.95rem', fontStyle:'italic', color:`${P.text}80`, lineHeight:1.85 }}>
+              Amante de los animales y la naturaleza, es quien asegura que cada propiedad esté impecable, que cada bienvenida sea cálida y que el cuidado del entorno sea siempre prioritario.
+            </p>
+            <div style={{ display:'flex', gap:8, marginTop:'1.8rem', flexWrap:'wrap' }}>
+              {['Educación','Animales','Naturaleza','Hospitalidad'].map(v => (
+                <span key={v} style={{ padding:'5px 12px', border:`1px solid ${P.accent}44`, fontSize:'0.6rem', letterSpacing:'0.18em', textTransform:'uppercase', color:`${P.text}c0` }}>{v}</span>
+              ))}
+            </div>
+          </div>
+          <div style={{ order: isMobile?1:2 }}>
+            <FotoSlot src="nosotros/julia-playa.jpg" alt="Julia Villanueva en la playa" height={isMobile?'300px':'440px'} />
+          </div>
+        </div>
+      </section>
+
+      {/* VALORES */}
+      <section id="valores" style={{ background:P.alt, padding: isMobile?'4rem 5vw':'6rem 5vw', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'20vw', color:`${P.accent}03`, right:'-1rem', bottom:'-2rem', userSelect:'none', pointerEvents:'none', lineHeight:1 }}>AMOR</div>
+        <div style={{ textAlign:'center', marginBottom: isMobile?'2.5rem':'4rem', position:'relative' }}>
+          <span style={{ ...S.tag, textAlign:'center' }}>Lo que nos mueve</span>
+          <h2 style={{ ...S.title, fontSize: isMobile?'2.5rem':'clamp(2.5rem,4.5vw,4rem)' }}>Nuestros <span style={{ color:P.accent }}>valores</span></h2>
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr 1fr':'repeat(5,1fr)', gap:'1px', background:`${P.accent}18`, border:`1px solid ${P.accent}18`, position:'relative' }}>
+          {[
+            { icon:'🌊', t:'Costa primero',    d:'Cada decisión respeta el entorno natural de Puertecillo.' },
+            { icon:'🐾', t:'Amor animal',      d:'Julia y Fede son apasionados por los animales — y las propiedades pet-friendly lo demuestran.' },
+            { icon:'🤝', t:'Trato cercano',    d:'Sin scripts. Sin call centers. Siempre hay una persona real al otro lado.' },
+            { icon:'🏄', t:'Vivir el lugar',   d:'Conocemos Puertecillo porque lo vivimos, no porque lo gestionamos desde lejos.' },
+            { icon:'✦',  t:'Sin letra chica',  d:'Transparencia total: comisiones claras, reportes reales, comunicación directa.' },
+          ].map(v => (
+            <div key={v.t} style={{ background:P.alt, padding: isMobile?'2rem 1.4rem':'2.8rem 2rem', transition:'background 0.3s' }}
+              onMouseEnter={ev=>ev.currentTarget.style.background=P.bg} onMouseLeave={ev=>ev.currentTarget.style.background=P.alt}>
+              <div style={{ fontSize:'1.6rem', marginBottom:'1rem' }}>{v.icon}</div>
+              <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'1.1rem', letterSpacing:'0.05em', color:P.text, marginBottom:'0.6rem' }}>{v.t}</div>
+              <p style={{ fontSize:'0.8rem', fontStyle:'italic', color:`${P.text}65`, lineHeight:1.7 }}>{v.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section style={{ background:P.bg, padding: isMobile?'4rem 5vw':'6rem 5vw', textAlign:'center', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'22vw', color:`${P.alt}88`, top:'50%', left:'50%', transform:'translate(-50%,-50%)', userSelect:'none', whiteSpace:'nowrap', pointerEvents:'none' }}>PUERTE</div>
+        <div style={{ position:'relative', maxWidth:'560px', margin:'0 auto' }}>
+          <h2 style={{ ...S.title, fontSize: isMobile?'2.5rem':'clamp(2.8rem,5vw,4.5rem)', marginBottom:'1.2rem' }}>
+            ¿Quieres ser<br/>parte de <span style={{ color:P.accent }}>StayPuerte</span>?
+          </h2>
+          <p style={{ fontSize:'0.95rem', fontStyle:'italic', color:`${P.text}60`, lineHeight:1.8, marginBottom:'2.5rem' }}>
+            Cuéntanos sobre tu propiedad o tu próxima estadía.
+          </p>
+          <div style={{ display:'flex', gap:'1rem', justifyContent:'center', flexWrap:'wrap' }}>
+            <button onClick={() => setPage('propietarios')} style={S.btnPrimary}>Soy propietario</button>
+            <button onClick={() => setPage('arrendar')} style={{ ...S.btnOutline, borderColor:`${P.accent}88` }}>Ver propiedades</button>
+          </div>
+        </div>
+      </section>
+
+      <footer style={{ background:'#050f16', borderTop:'1px solid rgba(200,168,107,0.1)', padding: isMobile?'2rem 5vw':'2.5rem 5vw', display:'flex', flexDirection: isMobile?'column':'row', alignItems: isMobile?'flex-start':'center', justifyContent:'space-between', flexWrap:'wrap', gap:'1.2rem' }}>
+        <Logo onClick={() => setPage('home')} />
+        <div style={{ display:'flex', gap: isMobile?'1rem 1.8rem':'2rem', flexWrap:'wrap' }}>
+          {['+56 9 9290 8598','hola@staypuerte.cl','Puertecillo, Chile'].map(t => (
+            <span key={t} style={{ fontSize:'0.68rem', color:'rgba(237,245,242,0.3)', letterSpacing:'0.12em', textTransform:'uppercase' }}>{t}</span>
+          ))}
+        </div>
+        <span style={{ fontSize:'0.68rem', color:'rgba(237,245,242,0.2)' }}>© 2026 StayPuerte</span>
+      </footer>
+    </div>
+  );
+};
+
+/* ════════════════════════════════════════════════
+   CONTACTO PAGE
+════════════════════════════════════════════════ */
+const ContactoPage = ({ setPage }) => {
+  const isMobile = useIsMobile();
+  const [sent, setSent] = useState(false);
+
+  const enviarWA = () => {
+    const n = document.getElementById('cnt-nombre').value.trim();
+    const t = document.getElementById('cnt-tel').value.trim();
+    const m = document.getElementById('cnt-msg').value.trim();
+    if (!n || !t) return alert('Por favor ingresa tu nombre y teléfono.');
+    const txt = `Hola StayPuerte, soy ${n}. Tel: ${t}. ${m || 'Quiero más información.'}`;
+    setSent(true);
+    setTimeout(() => window.open(`https://wa.me/56992908598?text=${encodeURIComponent(txt)}`, '_blank'), 500);
+    setTimeout(() => setSent(false), 3000);
+  };
+
+  const CANALES = [
+    { icon:'💬', label:'WhatsApp', value:'+56 9 9290 8598', href:'https://wa.me/56992908598?text=Hola%2C+quiero+info+sobre+StayPuerte', cta:'Abrir chat' },
+    { icon:'✉️', label:'Email', value:'hola@staypuerte.cl', href:'mailto:hola@staypuerte.cl', cta:'Enviar email' },
+    { icon:'📸', label:'Instagram', value:'@staypuerte', href:'https://instagram.com/staypuerte', cta:'Ver perfil' },
+  ];
+
+  return (
+    <div style={{ paddingTop:'80px' }} className="fade-in">
+
+      {/* HERO */}
+      <section style={{ background:P.bg, padding: isMobile?'5rem 5vw 4rem':'7rem 5vw 5rem', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', fontFamily:'Bebas Neue,sans-serif', fontSize:'24vw', color:`${P.accent}04`, right:'-1rem', top:'50%', transform:'translateY(-50%)', userSelect:'none', pointerEvents:'none', lineHeight:1 }}>HOLA</div>
+        <div style={{ position:'relative', maxWidth:'640px' }}>
+          <span style={S.tag}>Contáctanos</span>
+          <h1 style={{ ...S.title, fontSize: isMobile?'3.2rem':'clamp(3.5rem,7vw,6.5rem)', marginBottom:'1.4rem' }}>
+            Hablemos<br/><span style={{ color:P.accent }}>sin vueltas</span>.
+          </h1>
+          <p style={{ fontSize:'1rem', fontStyle:'italic', color:`${P.text}70`, lineHeight:1.85, maxWidth:'480px' }}>
+            Sea para arrendar, para sumarte como propietario o simplemente para preguntar — siempre hay alguien real al otro lado.
+          </p>
+        </div>
+      </section>
+
+      {/* CANALES */}
+      <div style={{ background:P.alt, borderTop:`1px solid ${P.accent}18`, borderBottom:`1px solid ${P.accent}18`, padding: isMobile?'2.5rem 5vw':'3rem 5vw' }}>
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'repeat(3,1fr)', gap:'1px', background:`${P.accent}18` }}>
+          {CANALES.map(c => (
+            <div key={c.label} style={{ background:P.alt, padding:'2.4rem 2rem', textAlign:'center', transition:'background 0.3s' }}
+              onMouseEnter={ev=>ev.currentTarget.style.background=P.bg} onMouseLeave={ev=>ev.currentTarget.style.background=P.alt}>
+              <div style={{ fontSize:'1.8rem', marginBottom:'0.8rem' }}>{c.icon}</div>
+              <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:'1.1rem', letterSpacing:'0.1em', color:P.text, marginBottom:'0.3rem' }}>{c.label}</div>
+              <div style={{ fontSize:'0.82rem', color:P.accent, marginBottom:'1.2rem', letterSpacing:'0.05em' }}>{c.value}</div>
+              <a href={c.href} target="_blank" rel="noopener" style={{ ...S.btnOutline, padding:'0.6rem 1.4rem', fontSize:'0.65rem', justifyContent:'center' }}>{c.cta} →</a>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* FORMULARIO + MAPA */}
+      <section id="formulario" style={{ background:P.bg, padding: isMobile?'4rem 5vw':'7rem 5vw' }}>
+        <div style={{ display:'grid', gridTemplateColumns: isMobile?'1fr':'1fr 1fr', gap: isMobile?'3rem':'5rem', maxWidth:'960px', margin:'0 auto' }}>
+          <div>
+            <span style={S.tag}>Escríbenos</span>
+            <h2 style={{ ...S.title, fontSize: isMobile?'2.5rem':'clamp(2.5rem,4vw,3.5rem)', marginBottom:'2rem' }}>¿En qué<br/>te <span style={{ color:P.accent }}>ayudamos</span>?</h2>
+            <div style={{ display:'flex', flexDirection:'column', gap:'0.8rem' }}>
+              <input id="cnt-nombre" type="text" placeholder="Tu nombre" />
+              <input id="cnt-tel" type="tel" placeholder="Tu teléfono (+56…)" />
+              <input id="cnt-email" type="email" placeholder="Tu email (opcional)" />
+              <textarea id="cnt-msg" placeholder="¿Eres propietario, huésped o simplemente tienes una pregunta?" style={{ height:'120px', resize:'none' }}></textarea>
+              <button onClick={enviarWA} style={{ ...S.btnGreen, justifyContent:'center', opacity:sent?0.7:1, background:'rgba(237,245,242,0.1)', border:'1px solid rgba(237,245,242,0.18)', color:'rgba(237,245,242,0.75)', width:'100%', height:'52px' }}>
+                {sent ? '✓ Redirigiendo a WhatsApp...' : '💬 Enviar por WhatsApp'}
+              </button>
+              <a href="mailto:hola@staypuerte.cl" style={{ ...S.btnOutline, justifyContent:'center', fontSize:'0.7rem' }}>
+                ✉️ Prefiero el email
+              </a>
+            </div>
+          </div>
+
+          <div id="ubicacion" style={{ display:'flex', flexDirection:'column', gap:'1.5rem' }}>
+            <div>
+              <span style={S.tag}>Dónde estamos</span>
+              <h3 style={{ ...S.title, fontSize:'clamp(1.8rem,3vw,2.5rem)', marginBottom:'0.8rem' }}>Puertecillo,<br/><span style={{ color:P.accent }}>VI Región</span></h3>
+              <p style={{ fontSize:'0.88rem', fontStyle:'italic', color:`${P.text}65`, lineHeight:1.75 }}>
+                Operamos en Litueche, Sexta Región de Chile. A 3h de Santiago por la Ruta 5 Sur y el desvío a Puertecillo.
+              </p>
+            </div>
+            <div style={{ flex:1, minHeight: isMobile?'220px':'280px', border:`1px solid ${P.accent}22`, overflow:'hidden' }}>
+              <iframe src="https://maps.google.com/maps?q=W26Q%2BJJ+Litueche%2C+Chile&output=embed&hl=es&z=13" style={{ width:'100%', height:'100%', minHeight: isMobile?'220px':'280px', border:'none', filter:'saturate(0.55) brightness(0.75)' }} loading="lazy" title="StayPuerte - Puertecillo"></iframe>
+            </div>
+            <div style={{ display:'flex', flexDirection:'column', gap:'0.6rem' }}>
+              {[['+56 9 9290 8598','tel:+56992908598'],['hola@staypuerte.cl','mailto:hola@staypuerte.cl']].map(([v,h]) => (
+                <a key={v} href={h} style={{ fontSize:'0.82rem', color:`${P.accent}cc`, letterSpacing:'0.08em', textDecoration:'none', transition:'color 0.2s' }}
+                  onMouseEnter={e=>e.target.style.color=P.accent} onMouseLeave={e=>e.target.style.color=`${P.accent}cc`}>→ {v}</a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer style={{ background:'#050f16', borderTop:'1px solid rgba(200,168,107,0.1)', padding: isMobile?'2rem 5vw':'2.5rem 5vw', display:'flex', flexDirection: isMobile?'column':'row', alignItems: isMobile?'flex-start':'center', justifyContent:'space-between', flexWrap:'wrap', gap:'1.2rem' }}>
+        <Logo onClick={() => setPage('home')} />
+        <div style={{ display:'flex', gap: isMobile?'1rem 1.8rem':'2rem', flexWrap:'wrap' }}>
+          {['+56 9 9290 8598','hola@staypuerte.cl','Puertecillo, Chile'].map(t => (
+            <span key={t} style={{ fontSize:'0.68rem', color:'rgba(237,245,242,0.3)', letterSpacing:'0.12em', textTransform:'uppercase' }}>{t}</span>
+          ))}
+        </div>
+        <span style={{ fontSize:'0.68rem', color:'rgba(237,245,242,0.2)' }}>© 2026 StayPuerte</span>
+      </footer>
+    </div>
+  );
+};
+
+/* ════════════════════════════════════════════════
    APP
 ════════════════════════════════════════════════ */
 const App = () => {
@@ -1025,6 +1321,8 @@ const App = () => {
       {page === 'home'         && <HomePage         setPage={setPage} />}
       {page === 'propietarios' && <PropietariosPage  setPage={setPage} />}
       {page === 'arrendar'     && <ArrendatariosPage setPage={setPage} />}
+      {page === 'nosotros'     && <NosotrosPage      setPage={setPage} />}
+      {page === 'contacto'     && <ContactoPage      setPage={setPage} />}
     </>
   );
 };
