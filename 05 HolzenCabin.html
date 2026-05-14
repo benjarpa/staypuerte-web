@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
@@ -18,6 +18,7 @@
     @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
     .fade-in{animation:fadeIn 0.5s ease forwards}
     @media(max-width:768px){.grid-layout{grid-template-columns:1fr!important}.sticky-card{position:static!important;top:auto!important}.photo-grid{grid-template-columns:1fr!important;grid-template-rows:300px!important}.thumb{display:none!important}}
+    @media(max-width:768px){.prop-desk-nav{display:none!important}}.prop-mob-btn{display:none!important}@media(max-width:768px){.prop-mob-btn{display:flex!important}}
   </style>
 </head>
 <body>
@@ -107,17 +108,29 @@ const Calendar = ({propId}) => {
 const App = () => {
   const [gallery,setGallery] = useState(null);
   const [scrolled,setScrolled] = useState(false);
+  const [mob,setMob] = useState(false);
   useEffect(()=>{const fn=()=>setScrolled(window.scrollY>80);window.addEventListener('scroll',fn);return()=>window.removeEventListener('scroll',fn)},[]);
   return (
     <div className="fade-in">
       <nav style={{position:'fixed',top:0,left:0,right:0,zIndex:200,padding:'0.9rem 5vw',display:'flex',alignItems:'center',justifyContent:'space-between',background:scrolled?'rgba(10,28,39,0.95)':'transparent',backdropFilter:scrolled?'blur(14px)':'none',borderBottom:scrolled?'1px solid rgba(200,168,107,0.12)':'1px solid transparent',transition:'all 0.4s'}}>
-        <a href="index.html"><img src="staypuerte-logo.png" alt="StayPuerte" style={{height:'38px',width:'auto',objectFit:'contain'}}/></a>
-        <div style={{display:'flex',gap:'0.8rem',alignItems:'center'}}>
+        <a href="index.html" style={{display:'flex',alignItems:'center',gap:'0.5rem',textDecoration:'none'}}><img src="staypuerte-logo.png" alt="StayPuerte" style={{height:'38px',width:'auto',objectFit:'contain'}}/><span style={{fontFamily:'DM Sans,sans-serif',fontSize:'0.72rem',letterSpacing:'0.18em',textTransform:'uppercase',color:'rgba(237,245,242,0.7)',fontWeight:400}}>Inicio</span></a>
+        <div style={{display:'flex',gap:'0.8rem',alignItems:'center'}} className="prop-desk-nav">
           <a href="index.html#propiedades" style={{fontSize:'0.7rem',letterSpacing:'0.18em',textTransform:'uppercase',color:'rgba(237,245,242,0.6)',textDecoration:'none',display:'flex',alignItems:'center',gap:'0.3rem'}} onMouseEnter={e=>e.currentTarget.style.color='#C8A86B'} onMouseLeave={e=>e.currentTarget.style.color='rgba(237,245,242,0.6)'}>← Propiedades</a>
           <a href="#disponibilidad" style={{fontSize:'0.7rem',letterSpacing:'0.18em',textTransform:'uppercase',color:'rgba(237,245,242,0.6)',textDecoration:'none'}} onMouseEnter={e=>e.target.style.color='#C8A86B'} onMouseLeave={e=>e.target.style.color='rgba(237,245,242,0.6)'}>Disponibilidad</a>
           <a href="https://www.airbnb.cl/rooms/1039658643604309668" target="_blank" rel="noopener" style={{background:'#D45E28',color:'#EDF5F2',padding:'0.55rem 1.4rem',fontFamily:'DM Sans,sans-serif',fontSize:'0.72rem',letterSpacing:'0.18em',textTransform:'uppercase',textDecoration:'none',transition:'background 0.3s'}} onMouseEnter={e=>e.currentTarget.style.background='#b84d20'} onMouseLeave={e=>e.currentTarget.style.background='#D45E28'}>Reservar en Airbnb</a>
         </div>
+        <button className="prop-mob-btn" onClick={()=>setMob(!mob)} style={{background:'none',border:'1px solid rgba(200,168,107,0.35)',color:'#C8A86B',width:'40px',height:'40px',cursor:'pointer',fontSize:'1.1rem',lineHeight:1,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{mob?'✕':'☰'}</button>
       </nav>
+      {mob && (
+        <div style={{position:'fixed',top:'62px',left:0,right:0,zIndex:199,background:'rgba(10,28,39,0.97)',backdropFilter:'blur(14px)',borderBottom:'1px solid rgba(200,168,107,0.15)',padding:'0.5rem 5vw 1.8rem',animation:'fadeIn 0.2s ease'}}>
+          <a href="index.html" style={{display:'block',color:'rgba(237,245,242,0.78)',textDecoration:'none',fontFamily:'Bebas Neue,sans-serif',fontSize:'1.4rem',letterSpacing:'0.12em',textTransform:'uppercase',padding:'0.85rem 0',borderBottom:'1px solid rgba(200,168,107,0.1)'}}>Inicio</a>
+          <a href="index.html#propiedades" onClick={()=>setMob(false)} style={{display:'block',color:'rgba(237,245,242,0.78)',textDecoration:'none',fontFamily:'Bebas Neue,sans-serif',fontSize:'1.4rem',letterSpacing:'0.12em',textTransform:'uppercase',padding:'0.85rem 0',borderBottom:'1px solid rgba(200,168,107,0.1)'}}>← Propiedades</a>
+          <a href="#disponibilidad" onClick={()=>setMob(false)} style={{display:'block',color:'rgba(237,245,242,0.78)',textDecoration:'none',fontFamily:'Bebas Neue,sans-serif',fontSize:'1.4rem',letterSpacing:'0.12em',textTransform:'uppercase',padding:'0.85rem 0',borderBottom:'1px solid rgba(200,168,107,0.1)'}}>Disponibilidad</a>
+          <div style={{marginTop:'1.4rem'}}>
+            <a href="https://www.airbnb.cl/rooms/1039658643604309668" target="_blank" rel="noopener" style={{display:'block',background:'#D45E28',color:'#EDF5F2',padding:'1rem',fontFamily:'DM Sans,sans-serif',fontSize:'0.8rem',letterSpacing:'0.18em',textTransform:'uppercase',textDecoration:'none',textAlign:'center',transition:'background 0.3s'}}>Reservar en Airbnb</a>
+          </div>
+        </div>
+      )}
 
       <div style={{paddingTop:'60px'}}>
         <div className="photo-grid" style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr',gridTemplateRows:'260px 260px',gap:'3px',maxHeight:'523px',overflow:'hidden'}}>
