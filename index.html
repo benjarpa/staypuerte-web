@@ -286,7 +286,10 @@ const Nav = ({ page, setPage, scrolled }) => {
   return (
     <>
       <nav style={{ position:'fixed', top:0, left:0, right:0, zIndex:200, padding:'1rem 5vw', display:'flex', alignItems:'center', justifyContent:'space-between', background:bg, backdropFilter:'blur(14px)', borderBottom:border, transition:'all 0.4s' }}>
-        <Logo onClick={() => { setPage('home'); closeMob(); }} />
+        <div onClick={() => { setPage('home'); closeMob(); }} style={{ display:'flex', alignItems:'center', gap:'0.5rem', cursor:'pointer' }}>
+          <Logo />
+          <span style={{ fontFamily:'DM Sans,sans-serif', fontSize:'0.72rem', letterSpacing:'0.18em', textTransform:'uppercase', color:'rgba(237,245,242,0.7)', fontWeight:400 }}>Inicio</span>
+        </div>
         <ul style={{ display:'flex', gap:'2.2rem', listStyle:'none', margin:'0 auto' }} className="desktop-nav">
           {links.map(([h,l]) => (
             <li key={h}><a href={h} style={{ color:'rgba(237,245,242,0.65)', textDecoration:'none', fontSize:'0.72rem', letterSpacing:'0.2em', textTransform:'uppercase', transition:'color 0.3s' }}
@@ -306,6 +309,8 @@ const Nav = ({ page, setPage, scrolled }) => {
       </nav>
       {mob && (
         <div style={{ position:'fixed', top:'62px', left:0, right:0, zIndex:199, background:'rgba(10,28,39,0.97)', backdropFilter:'blur(14px)', borderBottom:'1px solid rgba(200,168,107,0.15)', padding:'0.5rem 5vw 1.8rem', animation:'fadeIn 0.2s ease' }}>
+          <a onClick={() => { setPage('home'); closeMob(); }}
+            style={{ display:'block', color:'rgba(237,245,242,0.78)', textDecoration:'none', fontFamily:'Bebas Neue,sans-serif', fontSize:'1.4rem', letterSpacing:'0.12em', textTransform:'uppercase', padding:'0.85rem 0', borderBottom:'1px solid rgba(200,168,107,0.1)', cursor:'pointer' }}>Inicio</a>
           {links.map(([h,l]) => (
             <a key={h} href={h} onClick={closeMob}
               style={{ display:'block', color:'rgba(237,245,242,0.78)', textDecoration:'none', fontFamily:'Bebas Neue,sans-serif', fontSize:'1.4rem', letterSpacing:'0.12em', textTransform:'uppercase', padding:'0.85rem 0', borderBottom:'1px solid rgba(200,168,107,0.1)', transition:'color 0.2s' }}
